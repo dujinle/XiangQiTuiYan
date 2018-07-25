@@ -235,8 +235,8 @@
     "relativePath": "Texture"
   },
   "787b057b-5ea2-4541-be30-2ebb4dc9332a": {
-    "asset": 1532516345451,
-    "meta": 1532516345465,
+    "asset": 1532518249738,
+    "meta": 1532518249751,
     "relativePath": "Scene\\main.fire"
   },
   "7f3f2115-3202-4497-9f39-b1754d20347e": {
@@ -248,36 +248,6 @@
     "asset": 1532516005016,
     "meta": 1532516004966,
     "relativePath": "Texture\\按钮"
-  },
-  "6b56c47d-133e-4842-b905-6a0e5c45be76": {
-    "asset": 1532515920418,
-    "meta": 1532516005173,
-    "relativePath": "Texture\\按钮\\前进.png"
-  },
-  "8ea80016-c543-4d5d-8df3-d7b0d13043ef": {
-    "asset": 1532515900027,
-    "meta": 1532516005186,
-    "relativePath": "Texture\\按钮\\停止.png"
-  },
-  "1b11ec77-9693-4f1c-b763-962c9794d59c": {
-    "asset": 1532515874454,
-    "meta": 1532516005198,
-    "relativePath": "Texture\\按钮\\前进2.png"
-  },
-  "c3c5a8c0-5705-4add-80cf-1f859298bc9d": {
-    "asset": 1532515912458,
-    "meta": 1532516005204,
-    "relativePath": "Texture\\按钮\\回退.png"
-  },
-  "9a1a6c2b-a023-4530-9831-c2d9915f521b": {
-    "asset": 1532515888667,
-    "meta": 1532516005217,
-    "relativePath": "Texture\\按钮\\开始.png"
-  },
-  "02f5caf4-b327-4c0c-9790-b6eb95e0ed32": {
-    "asset": 1532515863713,
-    "meta": 1532516005222,
-    "relativePath": "Texture\\按钮\\回退2.png"
   },
   "0f1c1962-ba3c-4d6c-8437-9b3fd4d5d208": {
     "asset": 1532515998778,
@@ -353,5 +323,40 @@
     "asset": 1532509772640,
     "meta": 1532516005541,
     "relativePath": "Texture\\棋子\\马2.png"
+  },
+  "6b56c47d-133e-4842-b905-6a0e5c45be76": {
+    "asset": 1532518112324,
+    "meta": 1532518187926,
+    "relativePath": "Texture\\按钮\\前进.png"
+  },
+  "8ea80016-c543-4d5d-8df3-d7b0d13043ef": {
+    "asset": 1532518112248,
+    "meta": 1532518187934,
+    "relativePath": "Texture\\按钮\\停止.png"
+  },
+  "1b11ec77-9693-4f1c-b763-962c9794d59c": {
+    "asset": 1532518112038,
+    "meta": 1532518187946,
+    "relativePath": "Texture\\按钮\\前进2.png"
+  },
+  "c3c5a8c0-5705-4add-80cf-1f859298bc9d": {
+    "asset": 1532518112249,
+    "meta": 1532518187973,
+    "relativePath": "Texture\\按钮\\回退.png"
+  },
+  "02f5caf4-b327-4c0c-9790-b6eb95e0ed32": {
+    "asset": 1532518112038,
+    "meta": 1532518187986,
+    "relativePath": "Texture\\按钮\\回退2.png"
+  },
+  "9a1a6c2b-a023-4530-9831-c2d9915f521b": {
+    "asset": 1532518112154,
+    "meta": 1532518187994,
+    "relativePath": "Texture\\按钮\\开始.png"
+  },
+  "b0d3f440-2e67-4797-a478-a2a4b5825e7b": {
+    "asset": 1532518231159,
+    "meta": 1532518244917,
+    "relativePath": "Texture\\背景.png"
   }
 }
