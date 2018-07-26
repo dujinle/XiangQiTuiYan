@@ -18,7 +18,7 @@ cc.Class({
 //			cc.log(JSON.stringify(qizi_obj));
 
 			for(var j = 0;j < qizi_obj.num;j++){
-				var cnode = new cc.Node(qizi_obj.name + qizi_obj.type + j);
+				var cnode = new cc.Node(qizi_obj.name + "-" + qizi_obj.type + "-" + j);
 				var sp = cnode.addComponent(cc.Sprite);
 				sp.spriteFrame = sprite.spriteFrame;
 				var com = cnode.addComponent("qizi_base");
@@ -34,10 +34,5 @@ cc.Class({
 			var parent_pos = this.node.getPosition();
 			this.node.addChild(item);
 		}
-	},
-    start () {
-
-    },
-
-    // update (dt) {},
+	}
 });
