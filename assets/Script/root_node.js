@@ -35,7 +35,14 @@ cc.Class({
 		var node_com = node.getComponent("qizi_base");
 		this.current_step = node_com.my_type;
 		this.current_idx = this.current_idx + 1;
-		this.mhistory[this.current_idx] = {"node":node,"step":this.current_step,"idx":this.current_idx,"eat":eat_node};
+		this.mhistory[this.current_idx] = {
+			"node":node,
+			"step":this.current_step,
+			"idx":this.current_idx,
+			"eat":eat_node,
+			"from":node_com.from_pos,
+			"last":node_com.last_pos
+		};
 	},
 	//自定义的两个函数。将值保存在this变量里
 	setdata : function(json){
