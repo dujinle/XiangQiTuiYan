@@ -7,6 +7,7 @@ cc.Class({
 		my_x:-1,
 		my_y:-1,
 		last_pos:null,
+		from_pos:null,
 	},
 
 	onLoad () {
@@ -49,6 +50,7 @@ cc.Class({
 					cc.log("add node " + self.my_name);
 					g_root_node_com.add_node(self.node);
 				}
+				self.from_pos = cc.p(self.my_x,self.my_y);
 				cc.log("ok touch in the region.....g_root_node_com." + g_root_node_com.select_node.length);
 			}else{
 				var move = cc.moveTo(0.2,yuandian);
@@ -58,6 +60,7 @@ cc.Class({
 				if(is_have == true){
 					g_root_node_com.remove_node(self.node);
 				}
+				self.from_pos = self.node.getPosition();
 				cc.log("touch remove from parent root_node_com." + g_root_node_com.select_node.length);
 			}
 			cc.log("touch end");
@@ -531,8 +534,9 @@ cc.Class({
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		g_root_node_com.qizi_2d[this.last_pos.x][this.last_pos.y] = 0;
 		g_root_node_com.qizi_2d[qipan_pos.x][qipan_pos.y] = this.node;
+		this.from_pos = this.last_pos;
 		this.last_pos = qipan_pos;
-		g_root_node_com.update_history(this.node);
+		g_root_node_com.update_history(this.node,null);
 		var g_root_pos = g_root_node_com.get_position(qipan_pos.x,qipan_pos.y);
 		var parent_pos = this.node.parent.getPosition();
 		var x = g_root_pos.x - parent_pos.x;
@@ -551,8 +555,9 @@ cc.Class({
 		g_root_node_com.remove_node(in_pos_node);
 		g_root_node_com.qizi_2d[this.last_pos.x][this.last_pos.y] = 0;
 		g_root_node_com.qizi_2d[qipan_pos.x][qipan_pos.y] = this.node;
+		this.from_pos = this.last_pos;
 		this.last_pos = qipan_pos;
-		g_root_node_com.update_history(this.node);
+		g_root_node_com.update_history(this.node,in_pos_node);
 		var g_root_pos = g_root_node_com.get_position(qipan_pos.x,qipan_pos.y);
 		var parent_pos = this.node.parent.getPosition();
 		var x = g_root_pos.x - parent_pos.x;

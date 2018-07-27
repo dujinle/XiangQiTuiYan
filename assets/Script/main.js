@@ -16,9 +16,9 @@ cc.Class({
 		past_node:cc.Node,
 		current_step_node:cc.Node,
 		clear_button:cc.Node,
-    },
+	},
 
-    onLoad () {
+	onLoad () {
 		this.start_flag = false;
 		this.back_two_node.getComponent(cc.Button).interactable = false;
 		this.back_one_node.getComponent(cc.Button).interactable = false;
@@ -77,7 +77,41 @@ cc.Class({
 		this.start_node.getChildByName("start").active = true;
 		this.start_node.getChildByName("stop").active = false;
 	},
-	back_one(){},
+	back_one(){
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		var idx = g_root_node_com.current_idx;
+		if(idx < 0){
+			cc.log("还没有开始移动棋子");
+			return;
+		}
+		var tnode = g_root_node_com.mhistory[g_root_node_com.current_idx];
+		var node = tnode.node.getComponent("qizi_base");
+		if(tnode.step == 'red'){
+			g_root_node_com.current_step = "black";
+		}else{
+			g_root_node_com.current_step = "red";
+		}
+		var from_pos = node.from_pos;
+		var position = g_root_node_com.get_position(node.from_pos.x,node.from_pos.y);
+		var parent_pos = tnode.node.parent.getPosition();
+		var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
+		g_root_node_com.qizi_2d[node.last_pos.x][node.last_pos.y] = 0;
+		g_root_node_com.qizi_2d[node.from_pos.x][node.from_pos.y] = tnode.node;
+		node.from_pos = node.last_pos;
+		node.last_pos = from_pos;
+		cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
+		tnode.node.runAction(move);
+		if(tnode.eat != null){
+			g_root_node_com.qizi_2d[node.last_pos.x][node.last_pos.y] = tnode.eat;
+			var eat_node = tnode.eat.getComponent("qizi_base");
+			var position = g_root_node_com.get_position(eat_node.last_pos.x,eat_node.last_pos.y);
+			var parent_pos = tnode.eat.parent.getPosition();
+			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
+			tnode.eat.runAction(move);
+		}
+		g_root_node_com.current_idx = g_root_node_com.current_idx - 1;
+	},
 	forward_two(){},
 	forward(){},
 	game_start(){
@@ -134,7 +168,7 @@ cc.Class({
 		if(g_root_node_com.current_idx == -1){
 			this.current_step_node.getComponent(cc.Label).string = "";
 		}else{
-			this.current_step_node.getComponent(cc.Label).string = g_root_node_com.current_idx;
+			this.current_step_node.getComponent(cc.Label).string = g_root_node_com.current_idx + 1;
 		}
 	}
 });

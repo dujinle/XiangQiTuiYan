@@ -31,19 +31,19 @@ cc.Class({
 			}
 		}
     },
-	update_history(node){
+	update_history(node,eat_node){
 		var node_com = node.getComponent("qizi_base");
 		this.current_step = node_com.my_type;
 		this.current_idx = this.current_idx + 1;
-		this.mhistory[this.current_idx] = node;
+		this.mhistory[this.current_idx] = {"node":node,"step":this.current_step,"idx":this.current_idx,"eat":eat_node};
 	},
-    //自定义的两个函数。将值保存在this变量里
-    setdata : function(json){
-        this.data = json;
-    },  
-    getdata : function(){
-        return this.data;
-    },
+	//自定义的两个函数。将值保存在this变量里
+	setdata : function(json){
+		this.data = json;
+	},
+	getdata : function(){
+		return this.data;
+	},
 	add_node(node){
 		this.select_node.push(node);
 		var node_com = node.getComponent("qizi_base");
