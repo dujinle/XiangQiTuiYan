@@ -39,7 +39,49 @@ cc.Class({
 		}
 	},
 	back_two(){
-		
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		var idx = g_root_node_com.current_idx;
+		if(idx < 1){
+			cc.log("棋子移动的步数不够");
+			return;
+		}
+		this.count = 0;
+		this.callback = function(){
+			var tnode = g_root_node_com.mhistory[g_root_node_com.current_idx];
+			var node = tnode.node.getComponent("qizi_base");
+			if(tnode.step == 'red'){
+				g_root_node_com.current_step = "black";
+			}else{
+				g_root_node_com.current_step = "red";
+			}
+			var from_pos = tnode['from'];
+			var last_pos = tnode['last'];
+			var position = g_root_node_com.get_position(from_pos.x,from_pos.y);
+			var parent_pos = tnode.node.parent.getPosition();
+			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
+			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = 0;
+			g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = tnode.node;
+			node.from_pos = last_pos;
+			node.last_pos = from_pos;
+			cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
+			tnode.node.runAction(move);
+			if(tnode.eat != null){
+				g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
+				var eat_node = tnode.eat.getComponent("qizi_base");
+				cc.log("eat :" + eat_node.last_pos.x + " " + eat_node.last_pos.y + " from:" +  eat_node.from_pos.x + " " + eat_node.from_pos.y);
+				var position = g_root_node_com.get_position(eat_node.last_pos.x,eat_node.last_pos.y);
+				var parent_pos = tnode.eat.parent.getPosition();
+				var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
+				tnode.eat.runAction(move);
+			}
+			g_root_node_com.current_idx = g_root_node_com.current_idx - 1;
+			this.count = this.count + 1;
+			if(this.count >= 2){
+				this.unschedule(this.callback);
+			}
+		}
+		this.schedule(this.callback,0.5,2,0.000001);
 	},
 	clear_qizi(){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
@@ -92,20 +134,22 @@ cc.Class({
 		}else{
 			g_root_node_com.current_step = "red";
 		}
-		var from_pos = node.from_pos;
-		var position = g_root_node_com.get_position(node.from_pos.x,node.from_pos.y);
+		var from_pos = tnode['from'];
+		var last_pos = tnode['last'];
+		var position = g_root_node_com.get_position(from_pos.x,from_pos.y);
 		var parent_pos = tnode.node.parent.getPosition();
 		var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
-		g_root_node_com.qizi_2d[node.last_pos.x][node.last_pos.y] = 0;
-		g_root_node_com.qizi_2d[node.from_pos.x][node.from_pos.y] = tnode.node;
-		node.from_pos = node.last_pos;
+		g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = 0;
+		g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = tnode.node;
+		node.from_pos = last_pos;
 		node.last_pos = from_pos;
 		cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
 		tnode.node.runAction(move);
 		if(tnode.eat != null){
-			g_root_node_com.qizi_2d[node.last_pos.x][node.last_pos.y] = tnode.eat;
+			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
 			var eat_node = tnode.eat.getComponent("qizi_base");
 			var position = g_root_node_com.get_position(eat_node.last_pos.x,eat_node.last_pos.y);
+			cc.log("eat :" + eat_node.last_pos.x + " " + eat_node.last_pos.y + " from:" +  eat_node.from_pos.x + " " + eat_node.from_pos.y);
 			var parent_pos = tnode.eat.parent.getPosition();
 			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
 			tnode.eat.runAction(move);
