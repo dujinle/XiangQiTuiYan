@@ -1,5 +1,5 @@
 
-var g_qizi_obj = {
+g_qizi_obj = {
 	"兵1":{
 		"type":"red",
 		"num":5,
