@@ -75,12 +75,14 @@ cc.Class({
 				var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
 				tnode.eat.runAction(move);
 				eat_node.init_ontouch();
+				g_root_node_com.select_node.push(tnode.eat);
 			}
 			g_root_node_com.current_idx = g_root_node_com.current_idx - 1;
 			this.count = this.count + 1;
 			if(this.count >= 2){
 				this.unschedule(this.callback);
 			}
+			cc.log("history length:" +g_root_node_com.mhistory.length);
 		}
 		this.schedule(this.callback,0.5,2,0.000001);
 	},
@@ -121,6 +123,7 @@ cc.Class({
 		this.start_node.getChildByName("stop").active = false;
 	},
 	back_one(){
+		return;
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		var idx = g_root_node_com.current_idx;
@@ -148,6 +151,7 @@ cc.Class({
 		tnode.node.runAction(move);
 		if(tnode.eat != null){
 			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
+			g_root_node_com.select_node.push(tnode.eat);
 			var eat_node = tnode.eat.getComponent("qizi_base");
 			var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
 			cc.log("eat :" + eat_node.last_pos.x + " " + eat_node.last_pos.y + " from:" +  eat_node.from_pos.x + " " + eat_node.from_pos.y);
@@ -157,8 +161,52 @@ cc.Class({
 			eat_node.init_ontouch();
 		}
 		g_root_node_com.current_idx = g_root_node_com.current_idx - 1;
+		cc.log("history length:" +g_root_node_com.mhistory.length);
 	},
-	forward_two(){},
+	forward_two(){
+		return;
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		var idx = g_root_node_com.current_idx + 2;
+		if(idx >= g_root_node_com.mhistory.length){
+			cc.log("已经移动到最后的位置");
+			return;
+		}
+		this.count = 0;
+		this.callback = function(){
+			g_root_node_com.current_idx
+			var tnode = g_root_node_com.mhistory[g_root_node_com.current_idx + 1];
+			var node = tnode.node.getComponent("qizi_base");
+			if(tnode.step == 'red'){
+				g_root_node_com.current_step = "black";
+			}else{
+				g_root_node_com.current_step = "red";
+			}
+			var from_pos = tnode['from'];
+			var last_pos = tnode['last'];
+			var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
+			var parent_pos = tnode.node.parent.getPosition();
+			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
+			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.node;
+			g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = 0;
+			cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
+			tnode.node.runAction(move);
+			if(tnode.eat != null){
+				//g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
+				var eat_node = tnode.eat.getComponent("qizi_base");
+				eat_node.off_action();
+				var move = cc.moveTo(0.2,eat_node.yuandian);
+				tnode.eat.runAction(move);
+			}
+			g_root_node_com.current_idx = g_root_node_com.current_idx + 1;
+			this.count = this.count + 1;
+			if(this.count >= 2){
+				this.unschedule(this.callback);
+			}
+			cc.log("history length:" +g_root_node_com.mhistory.length);
+		}
+		this.schedule(this.callback,0.5,2,0.000001);
+	},
 	forward(){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
@@ -186,10 +234,12 @@ cc.Class({
 		if(tnode.eat != null){
 			//g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
 			var eat_node = tnode.eat.getComponent("qizi_base");
+			eat_node.off_action();
 			var move = cc.moveTo(0.2,eat_node.yuandian);
 			tnode.eat.runAction(move);
 		}
 		g_root_node_com.current_idx = g_root_node_com.current_idx + 1;
+		cc.log("history length:" +g_root_node_com.mhistory.length);
 	},
 	game_start(){
 		cc.log("game_start");
