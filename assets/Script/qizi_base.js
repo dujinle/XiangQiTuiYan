@@ -6,6 +6,7 @@ cc.Class({
 		my_type:null,
 		my_x:-1,
 		my_y:-1,
+		yuandian:null,
 		last_pos:null,
 		from_pos:null,
 	},
@@ -53,7 +54,7 @@ cc.Class({
 				self.from_pos = cc.p(self.my_x,self.my_y);
 				cc.log("ok touch in the region.....g_root_node_com." + g_root_node_com.select_node.length);
 			}else{
-				var move = cc.moveTo(0.2,yuandian);
+				var move = cc.moveTo(0.2,self.yuandian);
 				self.node.runAction(move);
 				var g_root_node_com = g_root_node.getComponent("root_node")
 				var is_have = g_root_node_com.is_have(self.node);

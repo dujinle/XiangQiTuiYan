@@ -68,6 +68,7 @@ cc.Class({
 			tnode.node.runAction(move);
 			if(tnode.eat != null){
 				g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
+				g_root_node_com.select_node.push(tnode.eat);
 				var eat_node = tnode.eat.getComponent("qizi_base");
 				cc.log("eat :" + eat_node.last_pos.x + " " + eat_node.last_pos.y + " from:" +  eat_node.from_pos.x + " " + eat_node.from_pos.y);
 				var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
@@ -207,7 +208,13 @@ cc.Class({
 		}
 		this.schedule(this.callback,0.5,2,0.000001);
 	},
+
+	forward_two(){
+		return;
+	},
+
 	forward(){
+		return;
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		var idx = g_root_node_com.current_idx + 1;
