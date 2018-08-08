@@ -1,0 +1,30 @@
+{
+  "ver": "1.0.0",
+  "uuid": "b3b64f79-b177-480b-ac28-9ab2acd40760",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "挑战残局": {
+      "ver": "1.0.3",
+      "uuid": "366f927c-ede2-4ce0-89b6-7328a807b581",
+      "rawTextureUuid": "b3b64f79-b177-480b-ac28-9ab2acd40760",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 347,
+      "height": 94,
+      "rawWidth": 347,
+      "rawHeight": 94,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

@@ -287,7 +287,7 @@ cc.Class({
 		}
 	},
 	exit(){
-		cc.director.end();
+		cc.director.loadScene("StartGameScene");
 	},
 	update(dt){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
