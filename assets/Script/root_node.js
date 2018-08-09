@@ -10,6 +10,8 @@ cc.Class({
 		mhistory:[],
 		current_step:null,
 		current_idx:-1,
+		from_sprite:cc.Node,
+		end_sprite:cc.Node
     },
 
     // use this for initialization
@@ -43,6 +45,10 @@ cc.Class({
 			"from":node_com.from_pos,
 			"last":node_com.last_pos
 		};
+		var from_pos = this.get_position(node_com.from_pos.x,node_com.from_pos.y);
+		this.from_sprite.setPosition(from_pos);
+		var end_pos = this.get_position(node_com.last_pos.x,node_com.last_pos.y);
+		this.end_sprite.setPosition(end_pos);
 	},
 	//自定义的两个函数。将值保存在this变量里
 	setdata : function(json){

@@ -115,6 +115,8 @@ cc.Class({
 				g_root_node_com.qizi_2d[i][j] = 0;
 			}
 		}
+		g_root_node_com.from_sprite.setPosition(cc.p(500,500));
+		g_root_node_com.end_sprite.setPosition(cc.p(500,500));
 		this.start_flag = false;
 		this.back_two_node.getComponent(cc.Button).interactable = false;
 		this.back_one_node.getComponent(cc.Button).interactable = false;
