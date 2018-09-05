@@ -14,7 +14,14 @@ cc.Class({
 	onLoad () {
 		var self = this;
 		this.yuandian = this.node.getPosition();
-		this.prev_onmove();
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		this.node.on(cc.Node.EventType.TOUCH_START, function (event) {
+			cc.log("<qizi_base>touch start the node");
+			var mask_node = self.node.getChildByName("touch_sprite");
+			mask_node.active = true;
+			g_root_node_com.set_data(self.node);
+		},this.node);
 	},
 	prev_onmove(){
 		var self = this;
@@ -74,7 +81,6 @@ cc.Class({
 		var y = delta.y + parent_pos.y;
 		//cc.log("x:" + x + " y:" + y);
 		this.node.setPosition(cc.p(x,y));
-		var parent_pos = this.node.parent.getPosition();
 		//cc.log("x:" + (x+parent_pos.x) + " y:" + (y+parent_pos.y));
 	},
 	off_action(){

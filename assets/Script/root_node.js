@@ -3,6 +3,7 @@ cc.Class({
 
     properties: {
         data:null,
+		move_node:null,
 		start_node:cc.Node,
 		end_node:cc.Node,
 		select_node:[],
@@ -51,11 +52,32 @@ cc.Class({
 		this.end_sprite.setPosition(end_pos);
 	},
 	//自定义的两个函数。将值保存在this变量里
-	setdata : function(json){
+	set_data : function(json){
 		this.data = json;
 	},
-	getdata : function(){
+	get_data : function(){
 		return this.data;
+	},
+	add_select_qizi(node,pos){
+		//添加之前判断一下是否已经在其他地方存在它
+		for(var i = 0;i < 10;i++){
+			for(var j = 0;j < 9;j++){
+				var my_node = this.qizi_2d[i][j];
+				if(my_node == 0){
+					continue;
+				}
+				if(i == pos.x && j == pos.y){
+					continue;
+				}
+				if(my_node.name == node.name){
+					cc.log("棋子已经存在在<"+ i + ","+ j + ">,并进行了位置替换");
+					this.qizi_2d[i][j] = 0;
+				}
+			}
+		}
+		cc.log("添加棋子到<"+ pos.x + ","+ pos.y + ">!");
+		this.qizi_2d[pos.x][pos.y] = node;
+		this.select_node.push(node);
 	},
 	add_node(node){
 		this.select_node.push(node);

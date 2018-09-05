@@ -1,11 +1,11 @@
 {
-  "ver": "1.0.0",
+  "ver": "2.0.0",
   "uuid": "7145ff43-e9e5-4ebb-b098-059bfc22cffa",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "subMetas": {
-    "遮罩图片": {
+    "mask_png": {
       "ver": "1.0.3",
       "uuid": "9c0c89d9-fb61-48d6-b663-99f0bdc01789",
       "rawTextureUuid": "7145ff43-e9e5-4ebb-b098-059bfc22cffa",
