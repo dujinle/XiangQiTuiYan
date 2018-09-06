@@ -7,9 +7,15 @@ cc.Class({
 			default:[],
 			type:cc.Node,
 		},
+		from_sprite:cc.Node,
+		end_sprite:cc.Node,
     },
     onLoad () {
 		cc.log("onLoad " + this.node.name);
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		g_root_node_com.from_sprite = this.from_sprite;
+		g_root_node_com.end_sprite = this.end_sprite;
 		for(var i = 0;i < this.layout.children.length;i++){
 			var item = this.layout.children[i];
 			var sprite = item.getComponent(cc.Sprite);
@@ -21,13 +27,14 @@ cc.Class({
 				var cnode = new cc.Node(qizi_obj.name + "-" + qizi_obj.type + "-" + j);
 				var sp = cnode.addComponent(cc.Sprite);
 				sp.spriteFrame = sprite.spriteFrame;
-				//棋子安装点击效果sprite
+				/*棋子安装点击效果sprite
 				var mask_node = new cc.Node("touch_sprite");
 				var mask_sp = mask_node.addComponent(cc.Sprite);
 				mask_sp.spriteFrame = g_assets["mask_png"];
 				cc.log(g_assets["mask_png"]);
 				mask_node.active = false;
 				cnode.addChild(mask_node);
+				*/
 				var com = cnode.addComponent("qizi_base");
 				com.my_name = qizi_obj.name;
 				com.my_type = qizi_obj.type;
