@@ -36,14 +36,7 @@ cc.Class({
 		this.qizi_2d[from_pos.x][from_pos.y] = 0;
 		
 		this.current_step = node_com.my_type;
-		this.mhistory[this.current_idx] = {
-			"node":node,
-			"step":this.current_step,
-			"idx":this.current_idx,
-			"eat":node_com.eat_node,
-			"from":node_com.from_pos,
-			"last":node_com.to_pos
-		};
+		this.mhistory[this.current_idx] = node;
 		if(node_com.eat_node != null){
 			this.remove_node(node_com.eat_node);
 		}

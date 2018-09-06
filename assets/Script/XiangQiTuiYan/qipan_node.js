@@ -77,8 +77,8 @@ cc.Class({
 			var mask_sprite = g_root_node_com.from_sprite;
 			mask_sprite.runAction(mask_move);
 			var select_node_com = select_node.getComponent("qizi_base");
-			select_node_com.from_pos = pos;
-			select_node_com.to_pos = pos;
+			select_node_com.from_pos = cc.p(pos.x,pos.y);
+			select_node_com.to_pos = cc.p(pos.x,pos.y);
 			this.touch_ok = false;
 			g_root_node_com.add_select_qizi(select_node,pos);
 		}else if(g_root_node_com.game_status == true){
@@ -104,6 +104,9 @@ cc.Class({
 					eat_node.runAction(cc.sequence(cc.delayTime(0.2),move));
 				}
 			}
+			cc.log("move node from x:" + select_node_com.from_pos.x  + " y:" + select_node_com.from_pos.y
+				+ " to: x:" + select_node_com.to_pos.x + " y:" + select_node_com.to_pos.y
+			);
 			/*设置棋子移动位置*/
 			var xd_pos = this.get_qizi_position(select_node,real_pos);
 			var move = cc.moveTo(0.2,xd_pos);

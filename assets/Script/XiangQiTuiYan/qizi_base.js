@@ -199,6 +199,7 @@ cc.Class({
 		}
 		var in_pos_node = g_root_node_com.qizi_2d[pos.x][pos.y];
 		//如果移动的位置没有棋子则完成操作
+		this.eat_node = null;
 		if(in_pos_node == 0){
 			this.from_pos = this.to_pos;
 			this.to_pos = pos;
