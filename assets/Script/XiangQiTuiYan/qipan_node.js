@@ -59,12 +59,15 @@ cc.Class({
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		var select_node = g_root_node_com.get_data();
+		if(select_node == null){
+			return;
+		}
 		var pos = this.get_real_position(xd_local);
 		var real_pos = this.get_position(pos.x,pos.y);
 		var xd_pos = this.get_qizi_position(select_node,real_pos);
 		
 		/*开始摆棋子阶段*/
-		if(select_node != null && g_root_node_com.game_status == false){
+		if(g_root_node_com.game_status == false){
 			var move = cc.moveTo(0.2,xd_pos);
 			select_node.runAction(move);
 			var mask_move = cc.moveTo(0.2,xd_pos);
@@ -75,9 +78,10 @@ cc.Class({
 			select_node_com.to_pos = pos;
 			this.touch_ok = false;
 			g_root_node_com.add_select_qizi(select_node,pos);
-		}else if(select_node != null && g_root_node_com.game_status == true){
+		}else if(g_root_node_com.game_status == true){
 			/*游戏开始了 点击棋盘位置确定棋子的走位*/
 			var select_node_com = select_node.getComponent("qizi_base");
+			g_root_node_com.deal_nodes_beside(select_node,true);
 			/*判断棋子的移动位置是否有效*/
 			var is_ok = select_node_com.ready_to_move(pos);
 			if(is_ok == -1){

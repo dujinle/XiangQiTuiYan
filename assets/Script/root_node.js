@@ -88,5 +88,21 @@ cc.Class({
 				break;
 			}
 		}
+	},
+	/*关闭或者打开除此以外的事件*/
+	deal_nodes_beside(node,flag){
+		for(var i = 0;i < this.select_node.length;i++){
+			var item = this.select_node[i];
+			if(item.name == node.name){
+				continue;
+			}else{
+				var item_com = item.getComponent("qizi_base");
+				if(flag == true){
+					item_com.on_action();
+				}else{
+					item_com.off_action();
+				}
+			}
+		}
 	}
 });

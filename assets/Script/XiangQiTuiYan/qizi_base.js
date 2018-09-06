@@ -26,6 +26,10 @@ cc.Class({
 			var mask_sprite = g_root_node_com.from_sprite;
 			mask_sprite.setPosition(self.node.getPosition());
 			g_root_node_com.set_data(self.node);
+			/*如果已经开始游戏则点击棋子之后暂时关闭其他棋子的事件*/
+			if(g_root_node_com.game_status == true){
+				g_root_node_com.deal_nodes_beside(self.node,false);
+			}
 		},this.node);
 	},
 	/*判断是否可以移动棋子 -1:不可以 0:可以 1:可以且吃掉对方棋子*/
