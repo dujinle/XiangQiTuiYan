@@ -6,6 +6,7 @@ cc.Class({
 		end_node:cc.Node,
 		vector_2d:null,
 		touch_ok:false,
+		audio_source:cc.Node,
     },
 
     // use this for initialization
@@ -69,7 +70,9 @@ cc.Class({
 		/*开始摆棋子阶段*/
 		if(g_root_node_com.game_status == false){
 			var move = cc.moveTo(0.2,xd_pos);
-			select_node.runAction(move);
+			var audio_play = cc.callFunc(this.play_audio,this);
+			var spawn = cc.spawn(move,audio_play);
+			select_node.runAction(spawn);
 			var mask_move = cc.moveTo(0.2,xd_pos);
 			var mask_sprite = g_root_node_com.from_sprite;
 			mask_sprite.runAction(mask_move);
@@ -98,13 +101,15 @@ cc.Class({
 					var eat_node_com = eat_node.getComponent("qizi_base");
 					var move = cc.moveTo(0.2,eat_node_com.yuandian);
 					eat_node_com.off_action();
-					eat_node.runAction(move);
+					eat_node.runAction(cc.sequence(cc.delayTime(0.2),move));
 				}
 			}
 			/*设置棋子移动位置*/
 			var xd_pos = this.get_qizi_position(select_node,real_pos);
 			var move = cc.moveTo(0.2,xd_pos);
-			select_node.runAction(move);
+			var audio_play = cc.callFunc(this.play_audio,this);
+			var spawn = cc.spawn(move,audio_play);
+			select_node.runAction(spawn);
 			var mask_move = cc.moveTo(0.2,xd_pos);
 			var mask_sprite = g_root_node_com.from_sprite;
 			mask_sprite.runAction(mask_move);
@@ -150,6 +155,10 @@ cc.Class({
 			}
 		}
 		return arr;
+	},
+	play_audio(){
+		var com = this.audio_source.getComponent(cc.AudioSource);
+		com.play();
 	},
 	//计算棋盘每一个格子的间距是多大
 	calc_qipan_jianju(){

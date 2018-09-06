@@ -107,28 +107,28 @@ cc.Class({
 			}
 			/*判断路径中是否有棋子*/
 			/*上行棋子*/
-			for(var i = this.to_pos.y + 1;i < pos.y;i++){
+			for(var i = this.to_pos.x + 1;i < pos.x;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[i][pos.y];
 				if(in_pos_node != 0){
 					return -1;
 				}
 			}
 			/*下行棋子*/
-			for(var i = pos.y + 1;i < this.to_pos.y;i++){
+			for(var i = pos.x + 1;i < this.to_pos.x;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[i][pos.y];
 				if(in_pos_node != 0){
 					return -1;
 				}
 			}
 			/*右行棋子*/
-			for(var i = this.to_pos.x + 1;i < pos.x;i++){
+			for(var i = this.to_pos.y + 1;i < pos.y;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[pos.x][i];
 				if(in_pos_node != 0){
 					return -1;
 				}
 			}
 			/*左行棋子*/
-			for(var i = pos.x + 1;i < this.to_pos.x;i++){
+			for(var i = pos.y + 1;i < this.to_pos.y;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[pos.x][i];
 				if(in_pos_node != 0){
 					return -1;
@@ -143,28 +143,28 @@ cc.Class({
 			var num = 0;
 			/*判断路径中是否有棋子*/
 			/*上行棋子*/
-			for(var i = this.to_pos.y + 1;i < pos.y;i++){
+			for(var i = this.to_pos.x + 1;i < pos.x;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[i][pos.y];
 				if(in_pos_node != 0){
 					num = num + 1;
 				}
 			}
 			/*下行棋子*/
-			for(var i = pos.y + 1;i < this.to_pos.y;i++){
+			for(var i = pos.x + 1;i < this.to_pos.x;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[i][pos.y];
 				if(in_pos_node != 0){
 					num = num + 1;
 				}
 			}
 			/*右行棋子*/
-			for(var i = this.to_pos.x + 1;i < pos.x;i++){
+			for(var i = this.to_pos.y + 1;i < pos.y;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[pos.x][i];
 				if(in_pos_node != 0){
 					num = num + 1;
 				}
 			}
 			/*左行棋子*/
-			for(var i = pos.x + 1;i < this.to_pos.x;i++){
+			for(var i = pos.y + 1;i < this.to_pos.y;i++){
 				var in_pos_node = g_root_node_com.qizi_2d[pos.x][i];
 				if(in_pos_node != 0){
 					num = num + 1;
