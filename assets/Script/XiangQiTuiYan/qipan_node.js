@@ -21,7 +21,7 @@ cc.Class({
 			for(var j = 0;j < 9;j++){
 				var x = pos.x + areas * j;
 				var y = pos.y + areas * i;
-				this.vector_2d[i][j] = cc.p(x,y);
+				this.vector_2d[i][j] = cc.v2(x,y);
 			}
 		}
 		var self = this;
@@ -37,7 +37,8 @@ cc.Class({
 				var width = Math.abs(end_node_pos.x - start_node_pos.x) + 100;
 				var height = Math.abs(end_node_pos.y - start_node_pos.y) + 100;
 				var rect = cc.rect(start_node_pos.x - 50,start_node_pos.y - 50,width,height);
-				if (cc.rectContainsPoint(rect, org_local)){
+				//if (cc.rectContainsPoint(rect, org_local)){
+				if(rect.contains(org_local)){
 					cc.log("<qipan_node> touch begin org_local: x:" + org_local.x + " y:" + org_local.y);
 					self.touch_ok = true;
 					return true;
@@ -77,8 +78,8 @@ cc.Class({
 			var mask_sprite = g_root_node_com.from_sprite;
 			mask_sprite.runAction(mask_move);
 			var select_node_com = select_node.getComponent("qizi_base");
-			select_node_com.from_pos = cc.p(pos.x,pos.y);
-			select_node_com.to_pos = cc.p(pos.x,pos.y);
+			select_node_com.from_pos = cc.v2(pos.x,pos.y);
+			select_node_com.to_pos = cc.v2(pos.x,pos.y);
 			this.touch_ok = false;
 			g_root_node_com.add_select_qizi(select_node,pos);
 		}else if(g_root_node_com.game_status == true){
@@ -122,7 +123,7 @@ cc.Class({
 	get_qizi_position(qizi_node,real_pos){
 		var qizi_pp_pos = qizi_node.parent.getPosition();
 		cc.log("qizi_pp_pos  x:" + qizi_pp_pos.x + " y:" + qizi_pp_pos.y);
-		var xd_pos = cc.p(real_pos.x - qizi_pp_pos.x,real_pos.y - qizi_pp_pos.y);
+		var xd_pos = cc.v2(real_pos.x - qizi_pp_pos.x,real_pos.y - qizi_pp_pos.y);
 		cc.log("xd_pos  x:" + xd_pos.x + " y:" + xd_pos.y);
 		return xd_pos;
 	},
@@ -133,7 +134,7 @@ cc.Class({
 	get_real_position(pos){
 		var x = pos.x
 		var y = pos.y;
-		var near_pos = cc.p(-1,-1);
+		var near_pos = cc.v2(-1,-1);
 		var near_dist = Math.exp(10);
 		for(var i = 0;i < 10;i++){
 			for(var j = 0;j < 9;j++){
@@ -143,7 +144,7 @@ cc.Class({
 				//cc.log(qipan_x,qipan_y,i,j,dist);
 				if(dist <= near_dist){
 					near_dist = dist;
-					near_pos = cc.p(i,j);
+					near_pos = cc.v2(i,j);
 				}
 			}
 		}

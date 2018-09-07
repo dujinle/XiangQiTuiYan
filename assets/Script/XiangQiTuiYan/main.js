@@ -33,7 +33,7 @@ cc.Class({
 	get_pos_from_parent(node){
 		if(node.parent != null){
 			var p_pos = node.parent.getPosition();
-			return cc.p(node.x + p_pos.x,node.y + p_pos.y);
+			return cc.v2(node.x + p_pos.x,node.y + p_pos.y);
 		}else{
 			return node.getPosition();
 		}
@@ -67,8 +67,8 @@ cc.Class({
 				g_root_node_com.qizi_2d[i][j] = 0;
 			}
 		}
-		g_root_node_com.from_sprite.setPosition(cc.p(500,500));
-		g_root_node_com.end_sprite.setPosition(cc.p(500,500));
+		g_root_node_com.from_sprite.setPosition(cc.v2(500,500));
+		g_root_node_com.end_sprite.setPosition(cc.v2(500,500));
 		this.off_one_button(false);
 		this.start_node.getChildByName("start").active = true;
 		this.start_node.getChildByName("stop").active = false;
@@ -83,15 +83,15 @@ cc.Class({
 			return;
 		}
 		this.count = 0;
-		this.callback = function(){
+		this.back_callback = function(){
 			self.back_one();
 			self.count = self.count + 1;
 			if(self.count >= 2){
-				self.unschedule(self.callback);
+				self.unschedule(self.back_callback);
 			}
 			cc.log("history length:" +g_root_node_com.mhistory.length);
 		}
-		this.schedule(this.callback,0.5,2,0.000001);
+		this.schedule(this.back_callback,0.5,2,0.000001);
 	},
 	/*回退一步*/
 	back_one(){
@@ -141,48 +141,23 @@ cc.Class({
 		cc.log("history length:" +g_root_node_com.mhistory.length);
 	},
 	forward_two(){
-		return;
+		var self = this;
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
-		var idx = g_root_node_com.current_idx + 2;
-		if(idx >= g_root_node_com.mhistory.length){
+		if(g_root_node_com.current_idx + 1 >= g_root_node_com.mhistory.length){
 			cc.log("已经移动到最后的位置");
 			return;
 		}
 		this.count = 0;
-		this.callback = function(){
-			g_root_node_com.current_idx
-			var tnode = g_root_node_com.mhistory[g_root_node_com.current_idx + 1];
-			var node = tnode.node.getComponent("qizi_base");
-			if(tnode.step == 'red'){
-				g_root_node_com.current_step = "black";
-			}else{
-				g_root_node_com.current_step = "red";
-			}
-			var from_pos = tnode['from'];
-			var last_pos = tnode['last'];
-			var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
-			var parent_pos = tnode.node.parent.getPosition();
-			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
-			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.node;
-			g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = 0;
-			cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
-			tnode.node.runAction(move);
-			if(tnode.eat != null){
-				//g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
-				var eat_node = tnode.eat.getComponent("qizi_base");
-				eat_node.off_action();
-				var move = cc.moveTo(0.2,eat_node.yuandian);
-				tnode.eat.runAction(move);
-			}
-			g_root_node_com.current_idx = g_root_node_com.current_idx + 1;
-			this.count = this.count + 1;
-			if(this.count >= 2){
-				this.unschedule(this.callback);
+		this.forward_callback = function(){
+			self.forward_one();
+			self.count = self.count + 1;
+			if(self.count >= 2){
+				self.unschedule(self.forward_callback);
 			}
 			cc.log("history length:" +g_root_node_com.mhistory.length);
 		}
-		this.schedule(this.callback,0.5,2,0.000001);
+		this.schedule(this.forward_callback,0.5,2,0.000001);
 	},
 	/*回退之后前进一步*/
 	forward_one(){
