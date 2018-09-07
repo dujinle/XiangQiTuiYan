@@ -73,50 +73,21 @@ cc.Class({
 		this.start_node.getChildByName("start").active = true;
 		this.start_node.getChildByName("stop").active = false;
 	},
+	/*回退2步*/
 	back_two(){
+		var self = this;
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
-		var idx = g_root_node_com.current_idx;
-		if(idx < 1){
+		if(g_root_node_com.current_idx < 2){
 			cc.log("棋子移动的步数不够");
 			return;
 		}
 		this.count = 0;
 		this.callback = function(){
-			var tnode = g_root_node_com.mhistory[g_root_node_com.current_idx];
-			var node = tnode.node.getComponent("qizi_base");
-			if(tnode.step == 'red'){
-				g_root_node_com.current_step = "black";
-			}else{
-				g_root_node_com.current_step = "red";
-			}
-			var from_pos = tnode['from'];
-			var last_pos = tnode['last'];
-			var position = g_root_node_com.get_position(from_pos.x,from_pos.y);
-			var parent_pos = tnode.node.parent.getPosition();
-			var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
-			g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = 0;
-			g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = tnode.node;
-			node.from_pos = last_pos;
-			node.last_pos = from_pos;
-			cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
-			tnode.node.runAction(move);
-			if(tnode.eat != null){
-				g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
-				g_root_node_com.select_node.push(tnode.eat);
-				var eat_node = tnode.eat.getComponent("qizi_base");
-				cc.log("eat :" + eat_node.last_pos.x + " " + eat_node.last_pos.y + " from:" +  eat_node.from_pos.x + " " + eat_node.from_pos.y);
-				var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
-				var parent_pos = tnode.eat.parent.getPosition();
-				var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
-				tnode.eat.runAction(move);
-				eat_node.init_ontouch();
-				g_root_node_com.select_node.push(tnode.eat);
-			}
-			g_root_node_com.current_idx = g_root_node_com.current_idx - 1;
-			this.count = this.count + 1;
-			if(this.count >= 2){
-				this.unschedule(this.callback);
+			self.back_one();
+			self.count = self.count + 1;
+			if(self.count >= 2){
+				self.unschedule(self.callback);
 			}
 			cc.log("history length:" +g_root_node_com.mhistory.length);
 		}
@@ -213,42 +184,42 @@ cc.Class({
 		}
 		this.schedule(this.callback,0.5,2,0.000001);
 	},
-
-	forward_two(){
-		return;
-	},
-
-	forward(){
-		return;
+	/*回退之后前进一步*/
+	forward_one(){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
-		var idx = g_root_node_com.current_idx + 1;
-		if(idx >= g_root_node_com.mhistory.length){
+		if(g_root_node_com.current_idx >= g_root_node_com.mhistory.length){
 			cc.log("已经移动到最后的位置");
 			return;
 		}
-		var tnode = g_root_node_com.mhistory[idx];
-		var node = tnode.node.getComponent("qizi_base");
-		if(tnode.step == 'red'){
-			g_root_node_com.current_step = "black";
-		}else{
-			g_root_node_com.current_step = "red";
-		}
-		var from_pos = tnode['from'];
-		var last_pos = tnode['last'];
-		var position = g_root_node_com.get_position(last_pos.x,last_pos.y);
-		var parent_pos = tnode.node.parent.getPosition();
-		var move = cc.moveTo(0.2,cc.p(position.x - parent_pos.x,position.y - parent_pos.y));
-		g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.node;
-		g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = 0;
-		cc.log("last:" + node.last_pos.x + " " + node.last_pos.y + " from:" + node.from_pos.x + " " + node.from_pos.y);
-		tnode.node.runAction(move);
-		if(tnode.eat != null){
-			//g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = tnode.eat;
-			var eat_node = tnode.eat.getComponent("qizi_base");
-			eat_node.off_action();
-			var move = cc.moveTo(0.2,eat_node.yuandian);
-			tnode.eat.runAction(move);
+		/*获取最后一步的棋子*/
+		var back_node = g_root_node_com.mhistory[g_root_node_com.current_idx];
+		var node_com = back_node.getComponent("qizi_base");
+		g_root_node_com.current_step = node_com.my_type;
+		/*移动的始末位置*/
+		var from_pos = node_com.from_pos;
+		var last_pos = node_com.to_pos;
+		var qipan_node_com = this.qipan.getComponent("qipan_node");
+		var real_pos = qipan_node_com.get_position(from_pos.x,from_pos.y);
+		var xd_pos = qipan_node_com.get_qizi_position(back_node,real_pos);
+		
+		var move = cc.moveTo(0.2,xd_pos);
+		back_node.runAction(move);
+		var mask_move = cc.moveTo(0.2,xd_pos);
+		var mask_sprite = g_root_node_com.from_sprite;
+		mask_sprite.runAction(mask_move);
+		node_com.from_pos = last_pos;
+		node_com.to_pos = from_pos;
+		g_root_node_com.qizi_2d[last_pos.x][last_pos.y] = 0;
+		g_root_node_com.qizi_2d[from_pos.x][from_pos.y] = back_node;
+		cc.log("last:" + last_pos.x + " " + last_pos.y + " from:" + from_pos.x + " " + from_pos.y);
+		/*这一步有棋子被吃*/
+		if(node_com.eat_node != null){
+			var eat_node_com = node_com.eat_node.getComponent("qizi_base");
+			var move = cc.moveTo(0.2,eat_node_com.yuandian);
+			eat_node_com.off_action();
+			node_com.eat_node.runAction(cc.sequence(cc.delayTime(0.2),move));
+			g_root_node_com.remove_node(node_com.eat_node);
 		}
 		g_root_node_com.current_idx = g_root_node_com.current_idx + 1;
 		cc.log("history length:" +g_root_node_com.mhistory.length);

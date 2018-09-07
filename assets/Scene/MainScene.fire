@@ -3370,7 +3370,7 @@
       "__id__": 2
     },
     "component": "main",
-    "handler": "forward",
+    "handler": "forward_one",
     "customEventData": ""
   },
   {
