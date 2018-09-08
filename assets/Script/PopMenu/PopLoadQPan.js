@@ -23,7 +23,7 @@ cc.Class({
                 var local=target.convertToNodeSpace(touch.getLocation());
                 var s = target.getContentSize();
                 var rect = cc.rect(0, 0, s.width, s.height);
-                if (cc.rectContainsPoint(rect, local)){
+                if (rect.contains(local)){
                     cc.log("ok touch in the region......");
                 }else{
                     cc.log("touch remove from parent");
@@ -31,7 +31,5 @@ cc.Class({
                 }
             }
         }, self.bg_sprite);
-	},
-
-    // update (dt) {},
+	}
 });
