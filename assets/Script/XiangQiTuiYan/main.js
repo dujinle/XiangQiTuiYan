@@ -236,6 +236,12 @@ cc.Class({
 	exit(){
 		cc.director.loadScene("StartGameScene");
 	},
+	load_qipan(){
+		var size = cc.director.getWinSize();
+		this.pop_qipan = cc.instantiate(g_assets["PopLoadQPan"]);
+		this.node.addChild(this.pop_qipan);
+		this.pop_qipan.setPosition(this.node.convertToNodeSpaceAR(cc.p(size.width/2,size.height/2)));
+	},
 	update(dt){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
