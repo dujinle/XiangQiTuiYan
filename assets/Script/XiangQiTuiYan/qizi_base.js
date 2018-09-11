@@ -4,6 +4,7 @@ cc.Class({
 	properties: {
 		my_name:null,
 		my_type:null,
+		target:null,
 		eat_node:null,
 		yuandian:null,
 		from_pos:null,

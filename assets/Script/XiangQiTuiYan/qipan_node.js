@@ -172,5 +172,5 @@ cc.Class({
 		var y = epos.y - spos.y;
 		var areas = Math.floor(Math.sqrt(Math.abs(x * y)/72));
 		return areas;
-	},
+	}
 });

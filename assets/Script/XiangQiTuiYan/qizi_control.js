@@ -27,17 +27,11 @@ cc.Class({
 				var cnode = new cc.Node(qizi_obj.name + "-" + qizi_obj.type + "-" + j);
 				var sp = cnode.addComponent(cc.Sprite);
 				sp.spriteFrame = sprite.spriteFrame;
-				/*棋子安装点击效果sprite
-				var mask_node = new cc.Node("touch_sprite");
-				var mask_sp = mask_node.addComponent(cc.Sprite);
-				mask_sp.spriteFrame = g_assets["mask_png"];
-				cc.log(g_assets["mask_png"]);
-				mask_node.active = false;
-				cnode.addChild(mask_node);
-				*/
+				
 				var com = cnode.addComponent("qizi_base");
 				com.my_name = qizi_obj.name;
 				com.my_type = qizi_obj.type;
+				com.target = qizi_obj.target;
 				this.qizis.push(cnode);
 				cnode.setPosition(item.getPosition());
 			}
@@ -48,5 +42,15 @@ cc.Class({
 			var parent_pos = this.node.getPosition();
 			this.node.addChild(item);
 		}
+	},
+	get_qizi_node(target){
+		for(var i = 0;i < this.qizis.length;i++){
+			var item = this.qizis[i];
+			var item_com = item.getComponent("qizi_base");
+			if(item_com.target == target){
+				return item;
+			}
+		}
+		return null;
 	}
 });

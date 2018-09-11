@@ -30,14 +30,7 @@ cc.Class({
 		this.forward_node.getComponent(cc.Button).interactable = flag;
 		this.forward_two_node.getComponent(cc.Button).interactable = flag;
 	},
-	get_pos_from_parent(node){
-		if(node.parent != null){
-			var p_pos = node.parent.getPosition();
-			return cc.v2(node.x + p_pos.x,node.y + p_pos.y);
-		}else{
-			return node.getPosition();
-		}
-	},
+	
 	/*游戏结束棋子归位到原来的位置*/
 	clear_qizi(){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
@@ -55,6 +48,7 @@ cc.Class({
 		for(var i = 0 ;i < qizi_room_com.qizis.length;i++){
 			var item = qizi_room_com.qizis[i];
 			var item_com = item.getComponent("qizi_base");
+			item_com.target = item_com.target.split("_")[0];
 			item_com.off_action();
 			item_com.on_action();
 		}
@@ -238,7 +232,12 @@ cc.Class({
 	},
 	load_qipan(){
 		var size = cc.winSize;
+		var self = this;
 		this.pop_qipan = cc.instantiate(g_assets["PopLoadQPan"]);
+		var pop_qipan_com = this.pop_qipan.getComponent("PopLoadQPan");
+		pop_qipan_com.install_cb(function(data){
+			self.callback(data);
+		});
 		this.node.addChild(this.pop_qipan);
 		this.pop_qipan.setPosition(this.node.convertToNodeSpaceAR(cc.v2(size.width/2,size.height/2)));
 	},
@@ -256,6 +255,50 @@ cc.Class({
 			this.step_num_label.getComponent(cc.Label).string = "";
 		}else{
 			this.step_num_label.getComponent(cc.Label).string = g_root_node_com.current_idx;
+		}
+	},
+	/*通过图像识别结果进行残局复盘*/
+	callback(data){
+		if(data['result'] != null){
+			var g_root_node = cc.director.getScene().getChildByName("RootNode");
+			var g_root_node_com = g_root_node.getComponent("root_node");
+			var size = data['result']['size'];
+			var objs = data['result']['objs'];
+			var width = size[0];
+			var height = size[1];
+			var extend_wd = ((710/796 * height) - width) / 2;
+			for(var i = 0;i < objs.length;i++){
+				var obj = objs[i];
+				cc.log(JSON.stringify(obj));
+				cc.log("extend_wd:" + extend_wd);
+				var label = obj.shift().shift().split(":").shift();
+				var left = obj.shift();
+				var right = obj.shift();
+				var top = obj.shift();
+				var bottom = obj.shift();
+				var xx = (top + bottom) / 2 * 10 / height;
+				var yy = (left + right) / 2 * 10 / (width + extend_wd * 2) - 0.2;
+				var y = Math.floor(yy);
+				var x = Math.floor(xx);
+				cc.log("xx:" + xx + " x:" + x + " yy:" + yy +" y:" + y);
+				if(x >= 10 || y >= 9){
+					continue;
+				}
+				x = 9 - x;
+				var qizi_room_com = this.qizi_room.getComponent("qizi_control");
+				var item = qizi_room_com.get_qizi_node(label);
+				if(item == null){
+					continue;
+				}
+				var item_com = item.getComponent("qizi_base");
+				var qipan_node_com = this.qipan.getComponent("qipan_node");
+				var real_pos = qipan_node_com.get_position(x,y);
+				var xd_pos = qipan_node_com.get_qizi_position(item,real_pos);
+				var move = cc.moveTo(0.2,xd_pos);
+				item.runAction(move);
+				item_com.target = item_com.target + "_" + Date.now();
+				g_root_node_com.add_select_qizi(item,cc.v2(x,y));
+			}
 		}
 	}
 });
