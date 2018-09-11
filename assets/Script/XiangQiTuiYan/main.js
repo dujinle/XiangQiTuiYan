@@ -297,6 +297,8 @@ cc.Class({
 				var move = cc.moveTo(0.2,xd_pos);
 				item.runAction(move);
 				item_com.target = item_com.target + "_" + Date.now();
+				item_com.from_pos = cc.v2(x,y);
+				item_com.to_pos = cc.v2(x,y);
 				g_root_node_com.add_select_qizi(item,cc.v2(x,y));
 			}
 		}
