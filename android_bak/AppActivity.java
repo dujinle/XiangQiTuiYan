@@ -153,7 +153,7 @@ public class AppActivity extends Cocos2dxActivity {
         return AppActivity.filePath;
     }
     public void callJavaScriptOpenFile(String filePath){
-        final String jsCallStr = String.format("OnGetFilePath();");
+        final String jsCallStr = String.format("bridge_android_ios(\"chooser\",\"" + filePath + "\" );");
         // call JS method, must be in GL thread
         AppActivity.this.runOnGLThread(new Runnable() {
             @Override

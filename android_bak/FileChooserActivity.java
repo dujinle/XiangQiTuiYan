@@ -41,6 +41,7 @@ public class FileChooserActivity extends AppCompatActivity {
             } else {//4.4一下系统调用方法
                 AppActivity.filePath = getRealPathFromURI(uri);
             }
+            AppActivity.AppThis.callJavaScriptOpenFile(AppActivity.filePath );
             finish();
         }
     }

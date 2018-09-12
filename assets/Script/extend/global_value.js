@@ -86,3 +86,13 @@ g_qizi_obj = {
 		"target":"JIANGB"
 	}
 };
+
+/*链接android 和 ios的桥梁函数*/
+var bridge_android_ios = function(type,data){
+	var g_root_node = cc.director.getScene().getChildByName("RootNode");
+	var g_root_node_com = g_root_node.getComponent("root_node");
+	/*回调文件选择结果函数*/
+	if(type == "chooser"){
+		g_root_node_com.chooser_cb(data);
+	}
+};
