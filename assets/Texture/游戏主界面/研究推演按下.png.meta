@@ -1,14 +1,14 @@
 {
   "ver": "2.0.0",
-  "uuid": "e3e782ee-1c80-4899-bee8-ef7785485616",
+  "uuid": "117cb4c7-7c51-4420-923c-f83eb56410f1",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "subMetas": {
-    "马1": {
+    "研究推演按下": {
       "ver": "1.0.3",
-      "uuid": "42697096-a5e3-47ec-b7fe-7b0f9ace0c78",
-      "rawTextureUuid": "e3e782ee-1c80-4899-bee8-ef7785485616",
+      "uuid": "2c3ef4e3-e644-441c-ab70-1f48ff90f1e7",
+      "rawTextureUuid": "117cb4c7-7c51-4420-923c-f83eb56410f1",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,
@@ -16,10 +16,10 @@
       "offsetY": 0,
       "trimX": 0,
       "trimY": 0,
-      "width": 65,
-      "height": 65,
-      "rawWidth": 65,
-      "rawHeight": 65,
+      "width": 328,
+      "height": 93,
+      "rawWidth": 328,
+      "rawHeight": 93,
       "borderTop": 0,
       "borderBottom": 0,
       "borderLeft": 0,
