@@ -4898,7 +4898,7 @@
       "__id__": 2
     },
     "component": "main",
-    "handler": "clear_qizi",
+    "handler": "restart_game",
     "customEventData": ""
   },
   {
@@ -5126,6 +5126,9 @@
     "clear_button": {
       "__id__": 114
     },
+    "restart_button": {
+      "__id__": 118
+    },
     "current_step_label": {
       "__id__": 104
     },
@@ -5199,6 +5202,7 @@
     "data": null,
     "game_status": false,
     "select_node": [],
+    "init_node": [],
     "qizi_2d": null,
     "mhistory": [],
     "current_step": null,

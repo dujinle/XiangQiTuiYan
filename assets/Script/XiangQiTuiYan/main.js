@@ -12,6 +12,7 @@ cc.Class({
 		forward_two_node:cc.Node,
 		start_node:cc.Node,
 		clear_button:cc.Node,
+		restart_button:cc.Node,
 		//标签参数
 		current_step_label:cc.Node,
 		past_step_label:cc.Node,
@@ -29,8 +30,33 @@ cc.Class({
 		this.back_one_node.getComponent(cc.Button).interactable = flag;
 		this.forward_node.getComponent(cc.Button).interactable = flag;
 		this.forward_two_node.getComponent(cc.Button).interactable = flag;
+		this.restart_button.getComponent(cc.Button).interactable = flag;
 	},
-	
+	/*重新开始游戏*/
+	restart_game(){
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		var qipan_node_com = this.qipan.getComponent("qipan_node");
+
+		for(var i = 0;i < g_root_node_com.init_node.length;i++){
+			var item = g_root_node_com.init_node[i];
+			var item_com = item.getComponent("qizi_base");
+			var real_pos = qipan_node_com.get_position(item_com.start_pos.x,item_com.start_pos.y);
+			var xd_pos = qipan_node_com.get_qizi_position(item,real_pos);
+			var move = cc.moveTo(0.2,xd_pos);
+			item.runAction(move);
+			cc.log("restart init select_node:" + item_com.my_name);
+			item_com.off_action();
+			item_com.on_action();
+			g_root_node_com.add_select_qizi(item,item_com.start_pos);
+		}
+		g_root_node_com.mhistory.splice(0,g_root_node_com.mhistory.length);
+		g_root_node_com.current_step = null;
+		g_root_node_com.current_idx = 0;
+		g_root_node_com.from_sprite.setPosition(cc.v2(500,500));
+		g_root_node_com.end_sprite.setPosition(cc.v2(500,500));
+		this.off_one_button(true);
+	},
 	/*游戏结束棋子归位到原来的位置*/
 	clear_qizi(){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
@@ -53,6 +79,7 @@ cc.Class({
 			item_com.on_action();
 		}
 		g_root_node_com.select_node.splice(0,g_root_node_com.select_node.length);
+		g_root_node_com.init_node.splice(0,g_root_node_com.init_node.length);
 		g_root_node_com.mhistory.splice(0,g_root_node_com.mhistory.length);
 		g_root_node_com.current_step = null;
 		g_root_node_com.current_idx = 0;
@@ -299,6 +326,7 @@ cc.Class({
 				item_com.target = item_com.target + "_" + Date.now();
 				item_com.from_pos = cc.v2(x,y);
 				item_com.to_pos = cc.v2(x,y);
+				item_com.start_pos = cc.v2(x,y);
 				g_root_node_com.add_select_qizi(item,cc.v2(x,y));
 			}
 		}

@@ -5,6 +5,7 @@ cc.Class({
         data:null,
 		game_status:false,
 		select_node:[],
+		init_node:[],
 		qizi_2d:null,
 		mhistory:[],
 		current_step:null,
@@ -51,6 +52,7 @@ cc.Class({
 	},
 	add_select_qizi(node,pos){
 		//添加之前判断一下是否已经在其他地方存在它
+		var flag = false;
 		for(var i = 0;i < 10;i++){
 			for(var j = 0;j < 9;j++){
 				var my_node = this.qizi_2d[i][j];
@@ -63,12 +65,22 @@ cc.Class({
 				if(my_node.name == node.name){
 					cc.log("棋子已经存在在<"+ i + ","+ j + ">,并进行了位置替换");
 					this.qizi_2d[i][j] = 0;
+					flag = true;
+					break;
 				}
 			}
+			if(flag == true){
+				break;
+			}
 		}
-		cc.log("添加棋子到<"+ pos.x + ","+ pos.y + ">!");
 		this.qizi_2d[pos.x][pos.y] = node;
-		this.select_node.push(node);
+		if(flag == false){
+			cc.log("添加棋子到<"+ pos.x + ","+ pos.y + ">!");
+			this.select_node.push(node);
+		}
+		if(this.game_status == false){
+			this.init_node.push(node);
+		}
 	},
 	set_game_status(flag){
 		this.game_status = flag;

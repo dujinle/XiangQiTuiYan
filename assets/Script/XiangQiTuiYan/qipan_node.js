@@ -80,6 +80,7 @@ cc.Class({
 			var select_node_com = select_node.getComponent("qizi_base");
 			select_node_com.from_pos = cc.v2(pos.x,pos.y);
 			select_node_com.to_pos = cc.v2(pos.x,pos.y);
+			select_node_com.start_pos = cc.v2(pos.x,pos.y);
 			this.touch_ok = false;
 			g_root_node_com.add_select_qizi(select_node,pos);
 		}else if(g_root_node_com.game_status == true){
