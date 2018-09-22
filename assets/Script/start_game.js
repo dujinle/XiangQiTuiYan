@@ -33,12 +33,11 @@ cc.Class({
 			}
 		});
 	},
-
-    start () {
-
-    },
 	button_main_cb(){
 		cc.director.loadScene("MainScene");
+	},
+	button_canju_cb(){
+		cc.director.loadScene("CanJuGameScene");
 	}
     // update (dt) {},
 });

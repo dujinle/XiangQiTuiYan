@@ -3,7 +3,7 @@
     "__type__": "cc.SceneAsset",
     "_name": "",
     "_objFlags": 0,
-    "_native": "",
+    "_rawFiles": null,
     "scene": {
       "__id__": 1
     }
@@ -15,9 +15,6 @@
     "_children": [
       {
         "__id__": 2
-      },
-      {
-        "__id__": 129
       }
     ],
     "_tag": -1,
@@ -5138,76 +5135,5 @@
     "step_num_label": {
       "__id__": 112
     }
-  },
-  {
-    "__type__": "cc.Node",
-    "_name": "RootNode",
-    "_objFlags": 0,
-    "_parent": {
-      "__id__": 1
-    },
-    "_children": [],
-    "_tag": -1,
-    "_active": true,
-    "_components": [
-      {
-        "__id__": 130
-      }
-    ],
-    "_prefab": null,
-    "_id": "02+vyYum9PearkGnJK/p1Q",
-    "_opacity": 255,
-    "_color": {
-      "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
-      "a": 255
-    },
-    "_cascadeOpacityEnabled": true,
-    "_anchorPoint": {
-      "__type__": "cc.Vec2",
-      "x": 0.5,
-      "y": 0.5
-    },
-    "_contentSize": {
-      "__type__": "cc.Size",
-      "width": 720,
-      "height": 1280
-    },
-    "_rotationX": 0,
-    "_rotationY": 0,
-    "_scaleX": 1,
-    "_scaleY": 1,
-    "_position": {
-      "__type__": "cc.Vec2",
-      "x": 360,
-      "y": 640
-    },
-    "_skewX": 0,
-    "_skewY": 0,
-    "_localZOrder": 0,
-    "_globalZOrder": 0,
-    "_opacityModifyRGB": false,
-    "groupIndex": 0
-  },
-  {
-    "__type__": "e8853wXKQFH2Z76IK37dCZl",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 129
-    },
-    "_enabled": true,
-    "data": null,
-    "game_status": false,
-    "select_node": [],
-    "init_node": [],
-    "qizi_2d": null,
-    "mhistory": [],
-    "current_step": null,
-    "current_idx": 0,
-    "from_sprite": null,
-    "end_sprite": null
   }
 ]
