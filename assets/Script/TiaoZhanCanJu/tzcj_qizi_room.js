@@ -43,6 +43,69 @@ cc.Class({
 			this.node.addChild(item);
 		}
 	},
+	get_all_path(color){
+		var g_root_node = cc.director.getScene().getChildByName("RootNode");
+		var g_root_node_com = g_root_node.getComponent("root_node");
+		var all_paths = {};
+		for(var i = 0;i < g_root_node_com.select_node.length;i++){
+			var item = g_root_node_com.select_node[i];
+			var item_com = item.getComponent("qizi_base");
+			if(item_com.my_type == color){
+				if(item_com.my_name == "兵"){
+					var path = [];
+					if(g_root_node_com.my == color){
+						//兵已经过河了
+						if(item_com.to_pos.x >= 5){
+							if(item_com.to_pos.y - 1 >= 0){
+								var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x,item_com.to_pos.y - 1));
+								if(ret != -1){
+									path.push(cc.v2(item_com.to_pos.x,item_com.to_pos.y - 1));
+								}
+							}
+							if(item_com.to_pos.y + 1 <= 8){
+								var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x,item_com.to_pos.y + 1));
+								if(ret != -1){
+									path.push(cc.v2(item_com.to_pos.x,item_com.to_pos.y + 1));
+								}
+							}
+						}
+						if(item_com.to_pos.x + 1 <= 9){
+							var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x + 1,item_com.to_pos.y));
+							if(ret != -1){
+								path.push(cc.v2(item_com.to_pos.x + 1,item_com.to_pos.y));
+							}
+						}
+					}
+					else{
+						//兵已经过河了
+						if(item_com.to_pos.x <= 4){
+							if(item_com.to_pos.y - 1 >= 0){
+								var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x,item_com.to_pos.y - 1));
+								if(ret != -1){
+									path.push(cc.v2(item_com.to_pos.x,item_com.to_pos.y - 1));
+								}
+							}
+							if(item_com.to_pos.y + 1 <= 8){
+								var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x,item_com.to_pos.y + 1));
+								if(ret != -1){
+									path.push(cc.v2(item_com.to_pos.x,item_com.to_pos.y + 1));
+								}
+							}
+						}
+						if(item_com.to_pos.x - 1 >= 0){
+							var ret = item_com.ready_to_move(cc.v2(item_com.to_pos.x - 1,item_com.to_pos.y));
+							if(ret != -1){
+								path.push(cc.v2(item_com.to_pos.x - 1,item_com.to_pos.y));
+							}
+						}
+					}
+					all_paths[item_com.my_name] = path;
+				}else if(item_com.my_name == "炮"){
+					continue;
+				}
+			}
+		}
+	},
 	get_qizi_node(target){
 		for(var i = 0;i < this.qizis.length;i++){
 			var item = this.qizis[i];

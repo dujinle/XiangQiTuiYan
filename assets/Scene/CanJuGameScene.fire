@@ -4422,12 +4422,9 @@
     "qizi_room": {
       "__id__": 22
     },
-    "back_two_node": null,
     "back_one_node": {
       "__id__": 66
     },
-    "forward_node": null,
-    "forward_two_node": null,
     "start_node": {
       "__id__": 70
     },

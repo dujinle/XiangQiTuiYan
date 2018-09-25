@@ -7,6 +7,7 @@ cc.Class({
 		select_node:[],
 		init_node:[],
 		qizi_2d:null,
+		my:null,
 		mhistory:[],
 		current_step:null,
 		current_idx:0,

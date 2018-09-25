@@ -32,7 +32,8 @@ cc.Class({
 					"帅2-9-3"
 				],
 				"content":"无相版马跃檀溪若是摆在街头，说白了就是坑你钱的。",
-				"past":"black"
+				"past":"black",
+				"start":"red"
 			}
 		};
 		this.onLoadCanJu(games["马跃檀溪"]);
@@ -55,6 +56,7 @@ cc.Class({
 			var g_root_node_com = g_root_node.getComponent("root_node");
 			var qizi_room_com = this.qizi_room.getComponent("tzcj_qizi_room");
 			g_root_node_com.current_step = data['past'];
+			g_root_node_com.my = data['start'];
 			var canju = data['record'];
 			this.count = 0;
 			this.back_callback = function(){
