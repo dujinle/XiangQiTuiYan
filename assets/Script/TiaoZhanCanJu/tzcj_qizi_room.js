@@ -151,6 +151,74 @@ cc.Class({
 					}
 					all_paths[item_com.my_name] = path;
 				}
+				else if(item_com.my_name == "车"){
+					var path = [];
+					/*向上下检测*/
+					for(var i = 0;i <= 9;i++){
+						if(i == item_com.to_pos.x){
+							continue;
+						}
+						var pos = cc.v2(i,item_com.to_pos.y);
+						var ret = item_com.ready_to_move(pos);
+						if(ret != -1){
+							path.push(pos);
+						}
+					}
+					/*向左右检测*/
+					for(var i = 0;i <= 8;i++){
+						if(i == item_com.to_pos.y){
+							continue;
+						}
+						var pos = cc.v2(item_com.to_pos.x,i);
+						var ret = item_com.ready_to_move(pos);
+						if(ret != -1){
+							path.push(pos);
+						}
+					}
+					all_paths[item_com.my_name] = path;
+				}
+				else if(item_com.my_name == "相"){
+					var path = [];
+					/*左前检测*/
+					for(var i = item_com.to_pos.x - 2;i <= item_com.to_pos.x + 2 && i <= 9;i++){
+						for(var j = item_com.to_pos.y - 2;j <= item_com.to_pos.y + 2 && j <= 8;j++){
+							var pos = cc.v2(i,j);
+							var ret = item_com.ready_to_move(pos);
+							if(ret != -1){
+								path.push(pos);
+							}
+						}
+					}
+					all_paths[item_com.my_name] = path;
+				}
+				else if(item_com.my_name == "士"){
+					var path = [];
+					/*左前检测*/
+					for(var i = item_com.to_pos.x - 1;i <= item_com.to_pos.x + 1 && i <= 9;i++){
+						for(var j = item_com.to_pos.y - 1;j <= item_com.to_pos.y + 1 && j <= 8;j++){
+							var pos = cc.v2(i,j);
+							var ret = item_com.ready_to_move(pos);
+							if(ret != -1){
+								path.push(pos);
+							}
+						}
+					}
+					all_paths[item_com.my_name] = path;
+				}
+				else if(item_com.my_name == "将"){
+					var path = [];
+					/*左前检测*/
+					for(var i = item_com.to_pos.x - 1;i <= item_com.to_pos.x + 1 && i <= 9;i++){
+						for(var j = item_com.to_pos.y - 1;j <= item_com.to_pos.y + 1 && j <= 8;j++){
+							var pos = cc.v2(i,j);
+							var ret = item_com.ready_to_move(pos);
+							if(ret != -1){
+								path.push(pos);
+							}
+						}
+					}
+					all_paths[item_com.my_name] = path;
+				}
 			}
 		}
 	},
