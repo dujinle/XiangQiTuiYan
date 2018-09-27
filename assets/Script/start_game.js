@@ -6,7 +6,7 @@ cc.Class({
 		source_leng:0,
     },
     onLoad () {
-		this.source_leng = 1;
+		this.source_leng = 15;
 		this.load_res();
         this.schedule(this.load_update,0.5);
     },
@@ -19,6 +19,13 @@ cc.Class({
 	load_res(){
 		var self = this;
 		cc.loader.loadResDir("",cc.SpriteFrame,function (err, assets) {
+			for(var i = 0;i < assets.length;i++){
+				g_assets[assets[i].name] = assets[i];
+				self.rate = self.rate + 1;
+				cc.log("load res :" + assets[i].name);
+			}
+		});
+		cc.loader.loadResDir("qizi_png",cc.SpriteFrame,function (err, assets) {
 			for(var i = 0;i < assets.length;i++){
 				g_assets[assets[i].name] = assets[i];
 				self.rate = self.rate + 1;

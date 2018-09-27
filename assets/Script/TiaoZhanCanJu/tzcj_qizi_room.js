@@ -16,6 +16,30 @@ cc.Class({
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		g_root_node_com.from_sprite = this.from_sprite;
 		g_root_node_com.end_sprite = this.end_sprite;
+		for(var i = 0;i < g_com.initMap.length;i++){
+			for(var j = 0;j < g_com.initMap[i].length;j++){
+				var item = g_com.initMap[i][j];
+				if(item != 0){
+					var type = g_com.keys[item];
+					var cnode = new cc.Node(item);
+					var sp = cnode.addComponent(cc.Sprite);
+					sp.spriteFrame = g_assets[g_com.sprite_frame_name[item]];
+					var com = cnode.addComponent("qizi_base");
+					com.my_name = item;
+					com.my_type = type;
+					g_com.mans[item] = {
+						'node':cnode,
+						'my':0
+					};
+				}
+			}
+		}
+		for(var key in g_com.mans){
+			var item = g_com.mans[key];
+			item.node.active = false;
+			this.node.addChild(item.node);
+		}
+		/*
 		for(var i = 0;i < this.layout.children.length;i++){
 			var item = this.layout.children[i];
 			var sprite = item.getComponent(cc.Sprite);
@@ -38,10 +62,9 @@ cc.Class({
 		}
 		for(var i = 0;i < this.qizis.length;i++){
 			var item = this.qizis[i];
-			var item_pos = item.getPosition();
-			var parent_pos = this.node.getPosition();
 			this.node.addChild(item);
 		}
+		*/
 	},
 	get_all_path(color){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
