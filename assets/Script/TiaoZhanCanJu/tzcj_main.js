@@ -8,14 +8,34 @@ cc.Class({
 		//按钮参数
 		back_one_node:cc.Node,
 		start_node:cc.Node,
-		clear_button:cc.Node,
 		restart_button:cc.Node,
 		//标签参数
-		current_step_label:cc.Node,
-		past_step_label:cc.Node,
 		step_num_label:cc.Node,
     },
+	onLoad(){
+		for(var i = 0;i < g_com.initMap.length;i++){
+			for(var j = 0;j < g_com.initMap[i].length;j++){
+				var item = g_com.initMap[i][j];
+				if(item != 0){
+					var qizi_node = cc.instantiate(g_assets["PopQzScene"]);
+					var qizi_node_com = qizi_node.getComponent("qizi_common");
+					qizi_node_com.key = item;
+					qizi_node_com.back_sprite.spriteFrame = g_assets[g_com.sprite_frame_name[item]];
+					g_com.mans[item] = {
+						'node':qizi_node,
+						'my':0
+					};
+				}
+			}
+		}
+		for(var key in g_com.mans){
+			var item = g_com.mans[key];
+			item.node.active = false;
+			this.qipan.addChild(item.node);
+		}
+	},
     start () {
+		/*
 		var games = {
 			"马跃檀溪":{
 				"record":[
@@ -37,6 +57,7 @@ cc.Class({
 			}
 		};
 		this.onLoadCanJu(games["马跃檀溪"]);
+		*/
 	},
 	off_one_button(flag){
 		this.back_one_node.getComponent(cc.Button).interactable = flag;
@@ -162,11 +183,10 @@ cc.Class({
 		g_root_node_com.set_data(null);
 		if(g_root_node_com.game_status == false){
 			//开始游戏
-			this.clear_button.getComponent(cc.Button).interactable = false;
+
 			this.off_one_button(true);
 			this.start_node.getChildByName("start").active = false;
 			this.start_node.getChildByName("stop").active = true;
-
 			g_root_node_com.set_game_status(true);
 
 			for(var i = 0;i < g_root_node_com.select_node.length;i++){
@@ -178,7 +198,6 @@ cc.Class({
 		}else{
 			//停止游戏
 			this.off_one_button(false);
-			this.clear_button.getComponent(cc.Button).interactable = true;
 			this.start_node.getChildByName("start").active = true;
 			this.start_node.getChildByName("stop").active = false;
 			g_root_node_com.set_game_status(false);
@@ -187,13 +206,6 @@ cc.Class({
 	update(dt){
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		var g_root_node_com = g_root_node.getComponent("root_node");
-		if(g_root_node_com.current_step == "red"){
-			this.current_step_label.getComponent(cc.Label).string = "黑";
-			this.past_step_label.getComponent(cc.Label).string = "红";
-		}else if(g_root_node_com.current_step == "black"){
-			this.current_step_label.getComponent(cc.Label).string = "红";
-			this.past_step_label.getComponent(cc.Label).string = "黑";
-		}
 		this.step_num_label.getComponent(cc.Label).string = g_root_node_com.current_idx;
 	}
 });
