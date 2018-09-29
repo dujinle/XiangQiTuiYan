@@ -39,21 +39,20 @@ cc.Class({
 		var games = {
 			"马跃檀溪":{
 				"record":[
-					"z0-8-4",
-					"c0-5-8",
-					"c1-4-8",
-					"p0-3-8",
-					"p1-3-7",
-					"j0-0-5",
-					"Z0-1-4",
-					"Z1-2-5",
-					"C0-3-3",
-					"M0-9-5",
-					"J0-9-3"
+					"z0-8-4-1",
+					"c0-5-8-1",
+					"c1-4-8-1",
+					"p0-3-8-1",
+					"p1-3-7-1",
+					"j0-0-5-1",
+					"Z0-1-4-0",
+					"Z1-2-5-0",
+					"C0-3-3-0",
+					"M0-9-5-0",
+					"J0-9-3-0"
 				],
 				"content":"无相版马跃檀溪若是摆在街头，说白了就是坑你钱的。",
-				"past":"black",
-				"start":"red"
+				"start":"1"
 			}
 		};
 		this.onLoadCanJu(games["马跃檀溪"]);
@@ -78,18 +77,17 @@ cc.Class({
 		
 		if(data != null){
 			var self = this;
-			var g_root_node = cc.director.getScene().getChildByName("RootNode");
-			var g_root_node_com = g_root_node.getComponent("root_node");
-			g_root_node_com.current_step = data['past'];
-			g_root_node_com.my = data['start'];
+			g_com.current_step = parseInt(data['start']);
 			var canju = data['record'];
 
 			this.count = 0;
 			this.back_callback = function(){
 				var objs = canju[self.count].split("-");
-				var item = g_com.mans[objs[0]].node;
 				var x = parseInt(objs[1]);
 				var y = parseInt(objs[2]);
+				g_com.mans[objs[0]].my = parseInt(objs[3]);
+				
+				var item = g_com.mans[objs[0]].node;
 				var item_com = item.getComponent("qizi_common");
 				
 				var qipan_node_com = self.qipan.getComponent("tzcj_qipan_node");
@@ -99,7 +97,6 @@ cc.Class({
 				item_com.to_pos = cc.v2(x,y);
 				item_com.start_pos = cc.v2(x,y);
 				g_com.initMap[x][y] = objs[0];
-				cc.log(item.name);
 				item.runAction(cc.show());
 				item.setPosition(real_pos);
 				self.count = self.count + 1;
