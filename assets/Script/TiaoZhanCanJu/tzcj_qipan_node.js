@@ -4,6 +4,7 @@ cc.Class({
     properties: {
 		start_node:cc.Node,
 		end_node:cc.Node,
+		touch_mark:cc.Node,
 		vector_2d:null,
 		touch_ok:false,
 		audio_source:cc.Node,
@@ -12,6 +13,7 @@ cc.Class({
     // use this for initialization
     onLoad: function () {
 		//初始化棋盘位置信息[10,9]
+		g_com.touch_mark = this.touch_mark;
 		this.vector_2d = this.init_vec2d(10,9);
 		var areas = this.calc_qipan_jianju();
 		var pos = this.start_node.getPosition();

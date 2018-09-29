@@ -379,8 +379,6 @@ g_com.value = {
 	]
 }
 
-
-
 g_com.keys = {
 	"c0":"c","c1":"c",
 	"m0":"m","m1":"m",
@@ -415,3 +413,7 @@ g_com.mans = {}
 
 /*存储棋子的移动历史*/
 g_com.history = []
+
+g_com.game_is_start = false;
+g_com.touch_mark = null;
+g_com.select_node = null;

@@ -4,6 +4,7 @@ cc.Class({
     properties: {
 		bg_sprite:cc.Node,
 		qipan:cc.Node,
+		qizi_com_node:cc.Node,
 		//按钮参数
 		back_one_node:cc.Node,
 		start_node:cc.Node,
@@ -12,12 +13,11 @@ cc.Class({
 		step_num_label:cc.Node,
     },
 	onLoad(){
-
 		for(var i = 0;i < g_com.initMap.length;i++){
 			for(var j = 0;j < g_com.initMap[i].length;j++){
 				var item = g_com.initMap[i][j];
 				if(item != 0){
-					var qizi_node = cc.instantiate(g_assets["PopQzScene"]);
+					var qizi_node = cc.instantiate(this.qizi_com_node);
 					var qizi_node_com = qizi_node.getComponent("qizi_common");
 					qizi_node_com.key = item;
 					qizi_node_com.back_sprite.spriteFrame = g_assets[g_com.sprite_frame_name[item]];
@@ -28,13 +28,12 @@ cc.Class({
 				}
 			}
 		}
+
 		for(var key in g_com.mans){
 			var item = g_com.mans[key];
 			item.node.runAction(cc.hide());
 			this.qipan.addChild(item.node);
-			item.node.setPosition(cc.v2(0,0));
 		}
-
 	},
     start () {
 		var games = {
@@ -58,6 +57,7 @@ cc.Class({
 			}
 		};
 		this.onLoadCanJu(games["马跃檀溪"]);
+
 	},
 	off_one_button(flag){
 		this.back_one_node.getComponent(cc.Button).interactable = flag;
@@ -83,8 +83,7 @@ cc.Class({
 			g_root_node_com.current_step = data['past'];
 			g_root_node_com.my = data['start'];
 			var canju = data['record'];
-//			for(var i = 0;i < canju.length;i++){
-				
+
 			this.count = 0;
 			this.back_callback = function(){
 				var objs = canju[self.count].split("-");
@@ -111,7 +110,7 @@ cc.Class({
 			this.schedule(this.back_callback,0.2,canju.length,0.000001);
 		}
 	},
-		/*回退2步*/
+	/*回退2步*/
 	back_two(){
 		var self = this;
 		var g_root_node = cc.director.getScene().getChildByName("RootNode");
@@ -180,29 +179,28 @@ cc.Class({
 	},
 	game_start(){
 		cc.log("game_start");
-		var g_root_node = cc.director.getScene().getChildByName("RootNode");
-		var g_root_node_com = g_root_node.getComponent("root_node");
-		g_root_node_com.set_data(null);
-		if(g_root_node_com.game_status == false){
+		if(g_com.game_is_start == false){
 			//开始游戏
-
 			this.off_one_button(true);
 			this.start_node.getChildByName("start").active = false;
 			this.start_node.getChildByName("stop").active = true;
-			g_root_node_com.set_game_status(true);
-
-			for(var i = 0;i < g_root_node_com.select_node.length;i++){
-				var item = g_root_node_com.select_node[i];
-				var item_com = item.getComponent("qizi_base");
-				cc.log("select_node:" + item_com.my_name);
-				item_com.on_action();
+			g_com.game_is_start = true;
+			//游戏开始 棋盘棋子添加点击事件
+			for(var i = 0;i < g_com.initMap.length;i++){
+				for(var j = 0;j < g_com.initMap[i].length;j++){
+					if(g_com.initMap[i][j] != 0){
+						var item = g_com.mans[g_com.initMap[i][j]];
+						var qizi_node = item.node.getComponent("qizi_common");
+						qizi_node.on_action();
+					}
+				}
 			}
 		}else{
 			//停止游戏
 			this.off_one_button(false);
 			this.start_node.getChildByName("start").active = true;
 			this.start_node.getChildByName("stop").active = false;
-			g_root_node_com.set_game_status(false);
+			g_com.game_is_start = false;
 		}
 	},
 	update(dt){

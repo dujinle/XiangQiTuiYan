@@ -21,13 +21,21 @@ cc.Class({
 		var g_root_node_com = g_root_node.getComponent("root_node");
 		this.node.on(cc.Node.EventType.TOUCH_START, function (event) {
 			cc.log("<qizi_base>touch start the node");
-			var mask_sprite = g_root_node_com.from_sprite;
-			mask_sprite.setPosition(self.node.getPosition());
-			g_root_node_com.set_data(self.node);
+			g_com.touch_mark.setPosition(self.node.getPosition());
+			g_com.select_node = self.node;
 			/*如果已经开始游戏则点击棋子之后暂时关闭其他棋子的事件*/
-			if(g_root_node_com.game_status == true){
-				g_root_node_com.deal_nodes_beside(self.node,false);
+			if(g_com.game_is_start == true){
+				for(var i = 0;i < g_com.initMap.length;i++){
+					for(var j = 0;j < g_com.initMap[i].length;j++){
+						if(g_com.initMap[i][j] != 0){
+							var item = g_com.mans[g_com.initMap[i][j]];
+							var qizi_node = item.node.getComponent("qizi_common");
+							qizi_node.off_action();
+						}
+					}
+				}
 			}
+			
 		},this.node);
 	}
 });
