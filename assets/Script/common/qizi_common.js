@@ -4,6 +4,9 @@ cc.Class({
 	properties: {
 		back_sprite:cc.Sprite,
 		key:null,
+		from_pos:null,
+		to_pos:null,
+		start_pos:null,
 	},
 	onLoad () {
 		var self = this;

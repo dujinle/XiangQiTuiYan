@@ -6,7 +6,7 @@ cc.Class({
 		source_leng:0,
     },
     onLoad () {
-		this.source_leng = 15;
+		this.source_leng = 31;
 		this.load_res();
         this.schedule(this.load_update,0.5);
     },
