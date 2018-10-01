@@ -53,23 +53,27 @@ g_com.bylaw = {}
 * my    当前移动的棋子角色
 */
 g_com.bylaw.Z = g_com.bylaw.z = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	var dist = Math.abs(x - nx) + Math.abs(y - ny);
 	//移动距离为1 不然就返回原来的位置
 	if(dist != 1){
 		return -1;
 	}
 	/*不可以后退*/
-	if(my == 1 && nx <= x){
+	if(my == g_com.start_juese && nx < x){
 		return -1;
 	}
-	if(my == 0 && nx >= x){
+	if(my != g_com.start_juese && nx > x){
 		return -1;
 	}
 	/*没有过河不可以左右移动*/
-	if (my == 1 && x < 5 && x == nx){
+	if (my == g_com.start_juese && x <= 4 && x == nx){
 		return -1;
 	}
-	if (my == 0 && x > 4 && x == nx){
+	if (my != g_com.start_juese && x >= 5 && x == nx){
 		return -1;
 	}
 	/*判断新位置是否有自己的棋子*/
@@ -82,84 +86,79 @@ g_com.bylaw.Z = g_com.bylaw.z = function(x,y,nx,ny,map,my){
 }
 
 g_com.bylaw.P = g_com.bylaw.p = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	/*必须是直来直往*/
 	if((nx - x) != 0 && (ny - y) != 0){
 		return -1;
 	}
+	if(x == nx && y == ny){
+		return -1;
+	}
 	var num = 0;
-	/*上行棋子*/
-	for(var i = x;i <= nx;i++){
-		if(map[i][ny] != 0){
+	/*上下行棋子*/
+	var x_move_step = nx - x;
+	while(true){
+		if(x_move_step == 0){break;}
+		var xx = x + x_move_step;
+		if(map[xx][ny] != 0){
 			num = num + 1;
-			continue;
 		}
+		x_move_step = x_move_step - x_move_step / Math.abs(x_move_step);
 	}
-	/*下行棋子*/
-	for(var i = nx;i <= x;i++){
-		if(map[i][ny] != 0){
+	/*左右检测*/
+	var y_move_step = ny - y;
+	while(true){
+		if(y_move_step == 0){break;}
+		var yy = y + y_move_step;
+		if(map[nx][yy] != 0){
 			num = num + 1;
-			continue;
 		}
+		y_move_step = y_move_step - y_move_step / Math.abs(y_move_step);
 	}
-	/*右行棋子*/
-	for(var i = y;i <= ny;i++){
-		if(map[nx][i] != 0){
-			num = num + 1;
-			continue;
-		}
-	}
-	/*左行棋子*/
-	for(var i = ny;i <= y;i++){
-		if(map[nx][i] != 0){
-			num = num + 1;
-			continue;
-		}
-	}
-	if(num != 2 && num != 0){
-		return -1;
-	}
-	if(num == 2 && map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
-		return -1;
+	if(num == 0){
+		return 0;
 	}
 	if(num == 2 && map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
 		return 1;
 	}
-	return 0;
+	return -1;
 }
 
 g_com.bylaw.C = g_com.bylaw.c = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	/*必须是直来直往*/
 	if((nx - x) != 0 && (ny - y) != 0){
 		return -1;
 	}
+	if(x == nx && y == ny){
+		return -1;
+	}
 	var num = 0;
-	/*上行棋子*/
-	for(var i = x;i <= nx;i++){
-		if(map[i][ny] != 0){
+	/*上下行棋子*/
+	var x_move_step = nx - x;
+	while(true){
+		if(x_move_step == 0){break;}
+		var xx = x + x_move_step;
+		if(map[xx][ny] != 0){
 			num = num + 1;
-			continue;
 		}
+		x_move_step = x_move_step - x_move_step / Math.abs(x_move_step);
 	}
-	/*下行棋子*/
-	for(var i = nx;i < x;i++){
-		if(map[i][ny] != 0){
+	/*左右检测*/
+	var y_move_step = ny - y;
+	while(true){
+		if(y_move_step == 0){break;}
+		var yy = y + y_move_step;
+		if(map[nx][yy] != 0){
 			num = num + 1;
-			continue;
 		}
-	}
-	/*右行棋子*/
-	for(var i = y;i <= ny;i++){
-		if(map[nx][i] != 0){
-			num = num + 1;
-			continue;
-		}
-	}
-	/*左行棋子*/
-	for(var i = ny;i < y;i++){
-		if(map[nx][i] != 0){
-			num = num + 1;
-			continue;
-		}
+		y_move_step = y_move_step - y_move_step / Math.abs(y_move_step);
 	}
 	if(num == 0){
 		return 0;
@@ -171,6 +170,10 @@ g_com.bylaw.C = g_com.bylaw.c = function(x,y,nx,ny,map,my){
 }
 
 g_com.bylaw.M = g_com.bylaw.m = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	/*判断是否走得日字*/
 	var dist = (x - nx) * (x - nx) + (y - ny) * (y - ny);
 	if(dist != 5){
@@ -201,6 +204,10 @@ g_com.bylaw.M = g_com.bylaw.m = function(x,y,nx,ny,map,my){
 }
 
 g_com.bylaw.X = g_com.bylaw.x = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	/*判断是否走得田字*/
 	if(Math.abs(y - ny) != 2){
 		return -1;
@@ -208,10 +215,10 @@ g_com.bylaw.X = g_com.bylaw.x = function(x,y,nx,ny,map,my){
 	if(Math.abs(x - nx) != 2){
 		return -1;
 	}
-	if(my == 1 && nx >= 5){
+	if(my == g_com.start_juese && nx >= 5){
 		return -1;
 	}
-	if(my == 0 && nx <= 4){
+	if(my != g_com.start_juese && nx <= 4){
 		return -1;
 	}
 	if(map[(x + nx) / 2][(y + ny) / 2] != 0){
@@ -227,15 +234,19 @@ g_com.bylaw.X = g_com.bylaw.x = function(x,y,nx,ny,map,my){
 }
 
 g_com.bylaw.S = g_com.bylaw.s = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	var dist = (x - nx) * (x - nx) + (y - ny) * (y - ny);
 	//移动距离为1 不然就返回原来的位置
 	if(dist != 2){
 		return -1;
 	}
-	if(my == 1 && (nx > 2 || Math.abs(ny - 4) > 1)){
+	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1 || nx < 0)){
 		return -1;
 	}
-	if(my == 0 && (nx < 7 || Math.abs(ny - 4) > 1)){
+	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1 || nx > 9)){
 		return -1;
 	}
 	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
@@ -248,15 +259,19 @@ g_com.bylaw.S = g_com.bylaw.s = function(x,y,nx,ny,map,my){
 }
 
 g_com.bylaw.J = g_com.bylaw.j = function(x,y,nx,ny,map,my){
+	//出界返回
+	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+		return -1;
+	}
 	var dist = Math.abs(x - nx) + Math.abs(y - ny);
 	//移动距离为1 不然就返回原来的位置
 	if(dist != 1){
 		return -1;
 	}
-	if(my == 1 && (nx > 2 || Math.abs(ny - 4) > 1)){
+	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1 || nx < 0)){
 		return -1;
 	}
-	if(my == 0 && (nx < 7 || Math.abs(ny - 4) > 1)){
+	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1 || nx > 9)){
 		return -1;
 	}
 	/*判断新位置是否有自己的棋子*/
@@ -393,8 +408,6 @@ g_com.keys = {
 	"Z0":"Z","Z1":"Z","Z2":"Z","Z3":"Z","Z4":"Z","Z5":"Z",
 }
 
-
-
 //黑子为红字价值位置的倒置
 g_com.value.C = g_com.arr2Clone(g_com.value.c).reverse();
 g_com.value.M = g_com.arr2Clone(g_com.value.m).reverse();
@@ -411,7 +424,8 @@ g_com.mans = {}
 g_com.history = []
 
 g_com.game_is_start = false;
-g_com.current_step = 0;
+g_com.start_juese = -1;
+g_com.current_step = -1;
 g_com.game_num = 0;
 g_com.touch_mark = null;
 g_com.select_node = null;

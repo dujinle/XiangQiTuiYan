@@ -2,6 +2,139 @@ AI = {};
 
 AI.treeDepth = 4;
 
+AI.getMoves = function(map,my){
+	var all_paths = [];
+	for(var i = 0;i < map.length;i++){
+		for(var j = 0;j < map[i].length;j++){
+			if(map[i][j] && g_com.mans[map[i][j]].my == my){
+				cc.log(map[i][j]);
+				//兵
+				var cur_pos = g_com.mans[map[i][j]].cur_pos;
+				if(g_com.keys[map[i][j]] == "z" || g_com.keys[map[i][j]] == "Z"){
+					for(var m = cur_pos[0] - 1;m <= cur_pos[0] + 1 && m <= 9;m++){
+						for(var n = cur_pos[1] - 1;n <= cur_pos[1]+ 1 && n <= 8;n++){
+							
+							var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,n,map,
+								my);
+							if(is_ok != -1){
+								all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,n]);
+							}
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "p" || g_com.keys[map[i][j]] == "P"){
+					/*向上下检测*/
+					for(var m = 0;m <= 9;m++){
+						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,cur_pos[1],map,
+								my);
+						if(is_ok != -1){
+							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,cur_pos[1]]);
+						}
+					}
+					/*向左右检测*/
+					for(var m = 0;m <= 8;m++){
+						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								cur_pos[0],m,map,
+								my);
+						if(is_ok != -1){
+							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],cur_pos[0],m]);
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "M" || g_com.keys[map[i][j]] == "m"){
+					for(var m = cur_pos[0] - 2;m <= cur_pos[0] + 2 && m <= 9;m++){
+						for(var n = cur_pos[1] - 2;n <= cur_pos[1]+ 2 && n <= 8;n++){
+							var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,n,map,
+								my);
+							if(is_ok != -1){
+								all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,n]);
+							}
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "c" || g_com.keys[map[i][j]] == "C"){
+					/*向上下检测*/
+					for(var m = 0;m <= 9;m++){
+						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,cur_pos[1],map,
+								my);
+						if(is_ok != -1){
+							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,cur_pos[1]]);
+						}
+					}
+					/*向左右检测*/
+					for(var m = 0;m <= 8;m++){
+						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								cur_pos[0],m,map,
+								my);
+						if(is_ok != -1){
+							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],cur_pos[0],m]);
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "X" || g_com.keys[map[i][j]] == "x"){
+					for(var m = cur_pos[0] - 2;m <= cur_pos[0] + 2 && m <= 9;m++){
+						for(var n = cur_pos[1] - 2;n <= cur_pos[1]+ 2 && n <= 8;n++){
+							var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,n,map,
+								my);
+							if(is_ok != -1){
+								all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,n]);
+							}
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "S" || g_com.keys[map[i][j]] == "s"){
+					for(var m = cur_pos[0] - 1;m <= cur_pos[0] + 1 && m <= 9;m++){
+						for(var n = cur_pos[1] - 1;n <= cur_pos[1]+ 1 && n <= 8;n++){
+							var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,n,map,
+								my);
+							if(is_ok != -1){
+								all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,n]);
+							}
+						}
+					}
+				}
+				else if(g_com.keys[map[i][j]] == "J" || g_com.keys[map[i][j]] == "j"){
+					for(var m = cur_pos[0] - 1;m <= cur_pos[0] + 1 && m <= 9;m++){
+						for(var n = cur_pos[1] - 1;n <= cur_pos[1]+ 1 && n <= 8;n++){
+							var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
+								cur_pos[0],
+								cur_pos[1],
+								m,n,map,
+								my);
+							if(is_ok != -1){
+								all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,n]);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return all_paths;
+}
+
 AI.getAlphaBeta = function (A, B, depth, map ,my) {
 	if (depth == 0) {
 		return {"value":AI.evaluate(map , my)}; //当搜索深度为0是时调用局面评价函数;
@@ -11,39 +144,31 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 	for (var i=0; i < moves.length; i++) {
 		//走这个走法;
 		var move= moves[i];
-		var key = move[4];
-		var oldX= move[0];
-		var oldY= move[1];
-		var newX= move[2];
-		var newY= move[3];
-		var clearKey = map[ newY ][ newX ]||"";
-		map[ newY ][ newX ] = key;    
+		var key = move[0];
+		var oldX= move[1];
+		var oldY= move[2];
+		var newX= move[3];
+		var newY= move[4];
+		var clearKey = map[ newX ][ newY ];
+		map[ newX ][ newY ] = key;
 		//走，赋新值，删除旧值
-		delete map[ oldY ][ oldX ];
-		play.mans[key].x = newX;
-		play.mans[key].y = newY;
-		if (clearKey=="j0"||clearKey=="J0") {
+		map[ oldX ][ oldY ] = 0;
+		g_com.mans[key].cur_pos = [newX,newY];
+		if (clearKey=="j0"||clearKey=="J0"){
 			//被吃老将
-			play.mans[key].x = oldX;
-			play.mans[key].y = oldY;
-			map[ oldY ][ oldX ] = key;
-			delete map[ newY ][ newX ];      //并不是真的走，所以这里要撤销
-			if (clearKey){
-				map[ newY ][ newX ] = clearKey;
-			}
+			g_com.mans[key].cur_pos = [oldX,oldY];
+			map[ oldX ][ oldY ] = key;
+			map[ newX][ newY ] = 0;      //并不是真的走，所以这里要撤销		
+			map[ newX ][ newY ] = clearKey;
 			return {"key":key,"x":newX,"y":newY,"value":8888};
 		}else {
 			var val = -AI.getAlphaBeta(-B, -A, depth - 1, map , -my).value;
 			//上面代表AI，这里倒置，-my，代表人的着法，然后再从上面开始执行
 			//val = val || val.value;
-			play.mans[key]	.x = oldX;
-			play.mans[key]	.y = oldY;
-			map[ oldY ][ oldX ] = key;
-			delete map[ newY ][ newX ];
-			if (clearKey){
-				map[ newY ][ newX ] = clearKey;
-				//play.mans[ clearKey ].isShow = true;
-			}
+			g_com.mans[key].cur_pos = [oldX,oldY];
+			map[ oldX ][ oldY ] = key;
+			map[ newX ][ newY ] = 0;
+			map[ newX ][ newY ] = clearKey;
 			if (val >= B) {
 				//将这个走法记录到历史表中;
 				//AI.setHistoryTable(txtMap,AI.treeDepth-depth+1,B,my);
@@ -76,11 +201,10 @@ AI.evaluate = function (map,my){
 		for(var n = 0; n < map[i].length; n++){
 			var key = map[i][n];
 			if (key){
-				val += play.mans[key].value[i][n] * play.mans[key].my;
+				val += g_com.value[g_com.keys[key]][i][n] * g_com.mans[key].my;
 			}
 		}
 	}
 	val += Math.floor( Math.random() * 10);  //让AI走棋增加随机元素
-	AI.number++;
 	return val * my;
 }

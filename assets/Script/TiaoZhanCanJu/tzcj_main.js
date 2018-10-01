@@ -77,7 +77,8 @@ cc.Class({
 		
 		if(data != null){
 			var self = this;
-			g_com.current_step = parseInt(data['start']);
+			g_com.current_step = parseInt(data['start']) == 1?1:-1;
+			g_com.start_juese = g_com.current_step;
 			var canju = data['record'];
 
 			this.count = 0;
@@ -85,17 +86,17 @@ cc.Class({
 				var objs = canju[self.count].split("-");
 				var x = parseInt(objs[1]);
 				var y = parseInt(objs[2]);
-				g_com.mans[objs[0]].my = parseInt(objs[3]);
-				
+				//mans {"node":node,"my":1,"past_pos":[x,y],"cur_pos":[x,y],"init_pos":[x,y]}
+				g_com.mans[objs[0]].my = parseInt(objs[3]) == 1?1:-1;
+				g_com.mans[objs[0]].past_pos = [x,y];
+				g_com.mans[objs[0]].cur_pos = [x,y];
+				g_com.mans[objs[0]].init_pos = [x,y];
 				var item = g_com.mans[objs[0]].node;
 				var item_com = item.getComponent("qizi_common");
 				
 				var qipan_node_com = self.qipan.getComponent("tzcj_qipan_node");
 				var real_pos = qipan_node_com.get_position(x,y);
 				
-				item_com.from_pos = cc.v2(x,y);
-				item_com.to_pos = cc.v2(x,y);
-				item_com.start_pos = cc.v2(x,y);
 				g_com.initMap[x][y] = objs[0];
 				item.runAction(cc.show());
 				item.setPosition(real_pos);
@@ -203,6 +204,6 @@ cc.Class({
 	update(dt){
 		//var g_root_node = cc.director.getScene().getChildByName("RootNode");
 		//var g_root_node_com = g_root_node.getComponent("root_node");
-		//this.step_num_label.getComponent(cc.Label).string = g_root_node_com.current_idx;
+		this.step_num_label.getComponent(cc.Label).string = g_com.game_num;
 	}
 });

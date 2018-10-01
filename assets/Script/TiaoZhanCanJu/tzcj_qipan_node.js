@@ -60,12 +60,12 @@ cc.Class({
          }, this.node);
     },
 	set_node_pos(xd_local){
+		var self = this;
 		var pos = this.get_real_position(xd_local);
 		var real_pos = this.get_position(pos.x,pos.y);
 		
 		/*开始摆棋子阶段*/
 		if(g_com.game_is_start == true){
-			
 			/*游戏开始了 点击棋盘位置确定棋子的走位*/
 			if(g_com.select_node.my != g_com.current_step){
 				return;
@@ -85,10 +85,10 @@ cc.Class({
 					}
 				}
 			}
-			cc.log(select_node_com.from_pos.x,select_node_com.from_pos.y,pos.x,pos.y)
+			cc.log(g_com.select_node.cur_pos[0],g_com.select_node.cur_pos[1],pos.x,pos.y)
 			var is_ok = g_com.bylaw[g_com.keys[select_node_com.key]](
-					select_node_com.from_pos.x,
-					select_node_com.from_pos.y,
+					g_com.select_node.cur_pos[0],
+					g_com.select_node.cur_pos[1],
 					pos.x,pos.y,g_com.initMap,
 					g_com.select_node.my);
 			cc.log("move is ok:" + is_ok);
@@ -96,21 +96,21 @@ cc.Class({
 			if(is_ok == -1){
 				cc.log("node:" + select_node.name + " canot move to the pos");
 				return 0;
-			}else if(is_ok == 0){
-				this.touch_ok = false;
 			}else if(is_ok == 1){
-				this.touch_ok = false;
-				var eat_node = select_node_com.eat_node;
-				if(eat_node != null){
-					var eat_node_com = eat_node.getComponent("qizi_base");
-					var move = cc.moveTo(0.2,eat_node_com.yuandian);
-					eat_node_com.off_action();
-					eat_node.runAction(cc.sequence(cc.delayTime(0.2),move));
-				}
+				var eat_node = g_com.mans[g_com.initMap[pos.x][pos.y]];
+				var eat_node_com = eat_node.node.getComponent("qizi_common");
+				eat_node.node.runAction(cc.hide());
+				eat_node_com.off_action();
+				g_com.select_node.eat_node = eat_node;
 			}
-			cc.log("move node from x:" + select_node_com.from_pos.x  + " y:" + select_node_com.from_pos.y
-				+ " to: x:" + select_node_com.to_pos.x + " y:" + select_node_com.to_pos.y
-			);
+			cc.log("move node from x:" + g_com.select_node.past_pos[0]  + " y:" + g_com.select_node.past_pos[1]
+				+ " to: x:" + g_com.select_node.cur_pos[0] + " y:" + g_com.select_node.cur_pos[1]);
+			
+			g_com.initMap[g_com.select_node.cur_pos[0]][g_com.select_node.cur_pos[1]] = 0;
+			g_com.initMap[pos.x][pos.y] = select_node_com.key;
+			g_com.select_node.past_pos = g_com.select_node.cur_pos;
+			g_com.select_node.cur_pos = [pos.x,pos.y];
+			g_com.history[g_com.game_num++] = g_com.select_node;
 			/*设置棋子移动位置*/
 			var move = cc.moveTo(0.2,real_pos);
 			var audio_play = cc.callFunc(this.play_audio,this);
@@ -118,6 +118,32 @@ cc.Class({
 			select_node.runAction(spawn);
 			var mask_move = cc.moveTo(0.2,real_pos);
 			g_com.touch_mark.runAction(mask_move);
+			setTimeout(function(){
+				/*AI to move*/
+				var ret = AI.getAlphaBeta(-Number.POSITIVE_INFINITY,Number.POSITIVE_INFINITY,4,g_com.initMap,g_com.select_node.my * -1);
+				cc.log(JSON.stringify(ret));
+				var ai_node = g_com.mans[ret.key];
+				var ai_node_pos = self.get_position(ret.x,ret.y);
+				var ai_move = cc.moveTo(0.2,ai_node_pos);
+				var ai_audio_play = cc.callFunc(self.play_audio,self);
+				var spawn = cc.spawn(ai_move,ai_audio_play);
+				ai_node.node.runAction(spawn);
+				var mask_move = cc.moveTo(0.2,ai_node_pos);
+				g_com.touch_mark.runAction(mask_move);
+				if(g_com.initMap[ret.x][ret.y] != 0){
+					var eat_node = g_com.mans[g_com.initMap[ret.x][ret.y]];
+					var eat_node_com = eat_node.node.getComponent("qizi_common");
+					eat_node.node.runAction(cc.hide());
+					eat_node_com.off_action();
+					ai_node.eat_node = eat_node;
+				}
+				g_com.initMap[ai_node.cur_pos[0]][ai_node.cur_pos[1]] = 0;
+				g_com.initMap[ret.x][ret.y] = ret.key;
+				ai_node.past_pos = ai_node.cur_pos;
+				ai_node.cur_pos = [ret.x,ret.y];
+				g_com.history[g_com.game_num++] = ai_node;
+				g_com.current_step = g_com.start_juese;
+			},500);
 		}
 	},
 	//获取相对于棋盘的棋子的相对位置
