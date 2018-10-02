@@ -11,8 +11,11 @@ cc.Class({
 		restart_button:cc.Node,
 		//标签参数
 		step_num_label:cc.Node,
+		qizi_data:null,
     },
 	onLoad(){
+		this.off_one_button(false);
+		g_com.initMap = g_com.arr2Clone(g_com.init_map);
 		for(var i = 0;i < g_com.initMap.length;i++){
 			for(var j = 0;j < g_com.initMap[i].length;j++){
 				var item = g_com.initMap[i][j];
@@ -55,14 +58,14 @@ cc.Class({
 				"start":"1"
 			}
 		};
-		this.onLoadCanJu(games["马跃檀溪"]);
+		this.onLoadCanJu(games["马跃檀溪"],0.2);
 
 	},
 	off_one_button(flag){
 		this.back_one_node.getComponent(cc.Button).interactable = flag;
 		this.restart_button.getComponent(cc.Button).interactable = flag;
 	},
-	onLoadCanJu(data){
+	onLoadCanJu(data,time){
 		cc.log("start load can ju game");
 		for(var key in g_com.mans){
 			var item = g_com.mans[key];
@@ -77,6 +80,7 @@ cc.Class({
 		
 		if(data != null){
 			var self = this;
+			this.qizi_data = data;
 			g_com.current_step = parseInt(data['start']) == 1?1:-1;
 			g_com.start_juese = g_com.current_step;
 			var canju = data['record'];
@@ -105,8 +109,25 @@ cc.Class({
 					self.unschedule(self.back_callback);
 				}
 			}
-			this.schedule(this.back_callback,0.2,canju.length,0.000001);
+			this.schedule(this.back_callback,time,canju.length,0.000001);
 		}
+	},
+	
+	restart_game(){
+		/*存储棋子的移动历史*/
+		g_com.ab_history = {};
+		g_com.history = [];
+
+		g_com.start_juese = -1;
+		g_com.current_step = -1;
+		g_com.game_num = 0;
+		g_com.touch_mark.runAction(cc.hide());
+		g_com.select_node = null;
+		this.off_one_button(false);
+		this.start_node.getChildByName("start").active = true;
+		this.start_node.getChildByName("stop").active = false;
+		g_com.game_is_start = false;
+		this.onLoadCanJu(this.qizi_data,0);
 	},
 	/*回退2步*/
 	back_two(){
@@ -201,9 +222,21 @@ cc.Class({
 			g_com.game_is_start = false;
 		}
 	},
+	exit(){
+		g_com.mans = {};
+		/*存储棋子的移动历史*/
+		g_com.ab_history = {};
+		g_com.history = [];
+
+		g_com.game_is_start = false;
+		g_com.start_juese = -1;
+		g_com.current_step = -1;
+		g_com.game_num = 0;
+		g_com.touch_mark = null;
+		g_com.select_node = null;
+		cc.director.loadScene("StartGameScene");
+	},
 	update(dt){
-		//var g_root_node = cc.director.getScene().getChildByName("RootNode");
-		//var g_root_node_com = g_root_node.getComponent("root_node");
 		this.step_num_label.getComponent(cc.Label).string = g_com.game_num;
 	}
 });

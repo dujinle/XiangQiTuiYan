@@ -1,7 +1,7 @@
 
 /*公共数据接口*/
 g_com = {};
-g_com.initMap = [
+g_com.init_map = [
 	['C0','M0','X0','S0','J0','S1','X1','M1','C1'],
 	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
 	[  0 ,'P0',  0 ,  0 ,  0 ,  0 ,  0 ,'P1',  0 ],
@@ -14,6 +14,7 @@ g_com.initMap = [
 	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
 	['c0','m0','x0','s0','j0','s1','x1','m1','c1']
 ]
+
 
 g_com.sprite_frame_name = {
 	"c0":"CHER","c1":"CHER",
@@ -421,6 +422,7 @@ g_com.value.Z = g_com.arr2Clone(g_com.value.z).reverse();
 g_com.mans = {}
 
 /*存储棋子的移动历史*/
+g_com.ab_history = {}
 g_com.history = []
 
 g_com.game_is_start = false;

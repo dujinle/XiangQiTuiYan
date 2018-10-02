@@ -67,6 +67,9 @@ cc.Class({
 		/*开始摆棋子阶段*/
 		if(g_com.game_is_start == true){
 			/*游戏开始了 点击棋盘位置确定棋子的走位*/
+			if(g_com.select_node == null){
+				return;
+			}
 			if(g_com.select_node.my != g_com.current_step){
 				return;
 			}
@@ -117,7 +120,7 @@ cc.Class({
 			var spawn = cc.spawn(move,audio_play);
 			select_node.runAction(spawn);
 			var mask_move = cc.moveTo(0.2,real_pos);
-			g_com.touch_mark.runAction(mask_move);
+			g_com.touch_mark.runAction(cc.sequence(cc.show(),mask_move));
 			setTimeout(function(){
 				/*AI to move*/
 				var ret = AI.getAlphaBeta(-Number.POSITIVE_INFINITY,Number.POSITIVE_INFINITY,4,g_com.initMap,g_com.select_node.my * -1);
@@ -129,7 +132,7 @@ cc.Class({
 				var spawn = cc.spawn(ai_move,ai_audio_play);
 				ai_node.node.runAction(spawn);
 				var mask_move = cc.moveTo(0.2,ai_node_pos);
-				g_com.touch_mark.runAction(mask_move);
+				g_com.touch_mark.runAction(cc.sequence(cc.show(),mask_move));
 				if(g_com.initMap[ret.x][ret.y] != 0){
 					var eat_node = g_com.mans[g_com.initMap[ret.x][ret.y]];
 					var eat_node_com = eat_node.node.getComponent("qizi_common");

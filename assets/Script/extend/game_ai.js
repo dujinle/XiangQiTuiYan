@@ -7,7 +7,6 @@ AI.getMoves = function(map,my){
 	for(var i = 0;i < map.length;i++){
 		for(var j = 0;j < map[i].length;j++){
 			if(map[i][j] && g_com.mans[map[i][j]].my == my){
-				cc.log(map[i][j]);
 				//兵
 				var cur_pos = g_com.mans[map[i][j]].cur_pos;
 				if(g_com.keys[map[i][j]] == "z" || g_com.keys[map[i][j]] == "Z"){
@@ -140,7 +139,7 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 		return {"value":AI.evaluate(map , my)}; //当搜索深度为0是时调用局面评价函数;
 	}
 	var moves = AI.getMoves(map , my ); //生成全部走法;
-
+	moves.sort(AI.sort);
 	for (var i=0; i < moves.length; i++) {
 		//走这个走法;
 		var move= moves[i];
@@ -169,18 +168,22 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 			map[ oldX ][ oldY ] = key;
 			map[ newX ][ newY ] = 0;
 			map[ newX ][ newY ] = clearKey;
+			
 			if (val >= B) {
 				//将这个走法记录到历史表中;
-				//AI.setHistoryTable(txtMap,AI.treeDepth-depth+1,B,my);
+				var move_key = move.join("-");
+				AI.setHistoryTable(g_com.ab_history,move_key,depth * depth);
 				return {"key":key,"x":newX,"y":newY,"value":B};
 			}
 			if (val > A) {
 				A = val; //设置最佳走法
+				AI.setHistoryTable(g_com.ab_history,move_key,depth * depth);
 				if (AI.treeDepth == depth)
 					var rootKey={"key":key,"x":newX,"y":newY,"value":A};
 			}
 		}
 	}
+
  	if (AI.treeDepth == depth) {
 		//已经递归回根了
 		if (!rootKey){
@@ -192,6 +195,15 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 		}
 	}
 	return {"key":key,"x":newX,"y":newY,"value":A};
+}
+
+AI.sort = function(a,b){
+	var key1 = a.join("-");
+	var key2 = b.join("-");
+	if(!!g_com.ab_history[key2] && !!g_com.ab_history[key1]){
+		return g_com.ab_history[key2] - g_com.ab_history[key1];
+	}
+	return 0;
 }
 
 //评估棋局 取得棋盘双方棋子价值差
@@ -207,4 +219,8 @@ AI.evaluate = function (map,my){
 	}
 	val += Math.floor( Math.random() * 10);  //让AI走棋增加随机元素
 	return val * my;
+}
+
+AI.setHistoryTable = function(map,move,value){
+	map[move] = value;
 }
