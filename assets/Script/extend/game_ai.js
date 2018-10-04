@@ -24,8 +24,8 @@ AI.getMoves = function(map,my){
 						}
 					}
 				}
-				else if(g_com.keys[map[i][j]] == "p" || g_com.keys[map[i][j]] == "P"){
-					/*向上下检测*/
+				else if(g_com.keys[map[i][j]] == "p" || g_com.keys[map[i][j]] == "P"){	
+					/*向左右检测*/
 					for(var m = 0;m <= 9;m++){
 						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
 								cur_pos[0],
@@ -36,7 +36,7 @@ AI.getMoves = function(map,my){
 							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,cur_pos[1]]);
 						}
 					}
-					/*向左右检测*/
+					/*向上下检测*/
 					for(var m = 0;m <= 8;m++){
 						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
 								cur_pos[0],
@@ -63,7 +63,7 @@ AI.getMoves = function(map,my){
 					}
 				}
 				else if(g_com.keys[map[i][j]] == "c" || g_com.keys[map[i][j]] == "C"){
-					/*向上下检测*/
+					/*向左右检测*/
 					for(var m = 0;m <= 9;m++){
 						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
 								cur_pos[0],
@@ -74,7 +74,7 @@ AI.getMoves = function(map,my){
 							all_paths.push([map[i][j],cur_pos[0],cur_pos[1],m,cur_pos[1]]);
 						}
 					}
-					/*向左右检测*/
+					/*向上下检测*/
 					for(var m = 0;m <= 8;m++){
 						var is_ok = g_com.bylaw[g_com.keys[map[i][j]]](
 								cur_pos[0],
@@ -143,6 +143,7 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 	for (var i=0; i < moves.length; i++) {
 		//走这个走法;
 		var move= moves[i];
+//		cc.log(JSON.stringify(move));
 		var key = move[0];
 		var oldX= move[1];
 		var oldY= move[2];
@@ -157,7 +158,6 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 			//被吃老将
 			g_com.mans[key].cur_pos = [oldX,oldY];
 			map[ oldX ][ oldY ] = key;
-			map[ newX][ newY ] = 0;      //并不是真的走，所以这里要撤销		
 			map[ newX ][ newY ] = clearKey;
 			return {"key":key,"x":newX,"y":newY,"value":8888};
 		}else {
@@ -166,7 +166,6 @@ AI.getAlphaBeta = function (A, B, depth, map ,my) {
 			//val = val || val.value;
 			g_com.mans[key].cur_pos = [oldX,oldY];
 			map[ oldX ][ oldY ] = key;
-			map[ newX ][ newY ] = 0;
 			map[ newX ][ newY ] = clearKey;
 			
 			if (val >= B) {

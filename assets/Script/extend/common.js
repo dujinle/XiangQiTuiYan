@@ -14,7 +14,12 @@ g_com.init_map = [
 	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
 	['c0','m0','x0','s0','j0','s1','x1','m1','c1']
 ]
-
+/*棋子在棋盘的确定位置保存*/
+g_com.initPos = function(x,y){
+	var xx = [-271,-203,-135,-67,1,69,137,205,273];
+	var yy = [-314,-246,-178,-110,-42,26,94,162,230,298];
+	return [xx[y],yy[x]];
+}
 
 g_com.sprite_frame_name = {
 	"c0":"CHER","c1":"CHER",
@@ -88,7 +93,7 @@ g_com.bylaw.Z = g_com.bylaw.z = function(x,y,nx,ny,map,my){
 
 g_com.bylaw.P = g_com.bylaw.p = function(x,y,nx,ny,map,my){
 	//出界返回
-	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
+	if(ny < 0 || ny > 8 || nx < 0 || nx > 9){
 		return -1;
 	}
 	/*必须是直来直往*/
@@ -244,10 +249,10 @@ g_com.bylaw.S = g_com.bylaw.s = function(x,y,nx,ny,map,my){
 	if(dist != 2){
 		return -1;
 	}
-	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1 || nx < 0)){
+	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
-	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1 || nx > 9)){
+	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
 	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
@@ -269,10 +274,10 @@ g_com.bylaw.J = g_com.bylaw.j = function(x,y,nx,ny,map,my){
 	if(dist != 1){
 		return -1;
 	}
-	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1 || nx < 0)){
+	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
-	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1 || nx > 9)){
+	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
 	/*判断新位置是否有自己的棋子*/
@@ -409,6 +414,22 @@ g_com.keys = {
 	"Z0":"Z","Z1":"Z","Z2":"Z","Z3":"Z","Z4":"Z","Z5":"Z",
 }
 
+g_com.setOtherNodePressActive = function(key,flag){
+	for(var i = 0;i < g_com.initMap.length;i++){
+		for(var j = 0;j < g_com.initMap[i].length;j++){
+			if(g_com.initMap[i][j] != 0 && g_com.initMap[i][j] != key){
+				var node = g_com.manNodes[g_com.initMap[i][j]];
+				var node_com = node.getComponent("qizi_common");
+				if(flag == true){
+					node_com.on_action();
+				}else{
+					node_com.off_action();
+				}
+			}
+		}
+	}
+}
+
 //黑子为红字价值位置的倒置
 g_com.value.C = g_com.arr2Clone(g_com.value.c).reverse();
 g_com.value.M = g_com.arr2Clone(g_com.value.m).reverse();
@@ -420,7 +441,7 @@ g_com.value.Z = g_com.arr2Clone(g_com.value.z).reverse();
 
 /*存储棋牌上棋子的信息*/
 g_com.mans = {}
-
+g_com.manNodes = {}
 /*存储棋子的移动历史*/
 g_com.ab_history = {}
 g_com.history = []

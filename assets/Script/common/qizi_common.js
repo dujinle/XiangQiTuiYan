@@ -3,28 +3,21 @@ cc.Class({
 
 	properties: {
 		back_sprite:cc.Sprite,
-		key:null,
-		from_pos:null,
-		to_pos:null,
-		start_pos:null,
-	},
-	onLoad () {
-		var self = this;
-		this.on_action();
 	},
 	off_action(){
-		this.node.off(cc.Node.EventType.TOUCH_START);
+		this.node.off("touchstart", this.event_function,this);
 	},
 	on_action(){
 		var self = this;
-		var g_root_node = cc.director.getScene().getChildByName("RootNode");
-		var g_root_node_com = g_root_node.getComponent("root_node");
+		this.node.on("touchstart", this.event_function,this);
+		
+		/*
 		this.node.on(cc.Node.EventType.TOUCH_START, function (event) {
 			cc.log("<qizi_base>touch start the node");
 			g_com.touch_mark.setPosition(self.node.getPosition());
 			g_com.touch_mark.runAction(cc.show());
 			g_com.select_node = g_com.mans[self.key];
-			/*如果已经开始游戏则点击棋子之后暂时关闭其他棋子的事件*/
+			//如果已经开始游戏则点击棋子之后暂时关闭其他棋子的事件
 			if(g_com.game_is_start == true){
 				for(var i = 0;i < g_com.initMap.length;i++){
 					for(var j = 0;j < g_com.initMap[i].length;j++){
@@ -39,7 +32,10 @@ cc.Class({
 					}
 				}
 			}
-			
 		},this.node);
+		*/
+	},
+	event_function(event){
+		this.node.dispatchEvent(new cc.Event.EventCustom("pressed", true));
 	}
 });
