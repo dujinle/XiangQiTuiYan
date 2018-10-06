@@ -1,15 +1,15 @@
 {
   "ver": "2.2.0",
-  "uuid": "48999c56-fd65-4dfe-a877-a58ef2827f0e",
+  "uuid": "e6a1baca-8dd3-4526-bd3e-50c7b11e08f9",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "subMetas": {
-    "JIANGR": {
+    "BP": {
       "ver": "1.0.3",
-      "uuid": "0cecefa8-5212-4469-ac7f-7865e1571548",
-      "rawTextureUuid": "48999c56-fd65-4dfe-a877-a58ef2827f0e",
+      "uuid": "837e396d-c0d1-4f75-afdd-d3dc64a01849",
+      "rawTextureUuid": "e6a1baca-8dd3-4526-bd3e-50c7b11e08f9",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

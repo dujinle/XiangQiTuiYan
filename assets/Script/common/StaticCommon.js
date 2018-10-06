@@ -1,27 +1,53 @@
 
 /*公共数据接口*/
-g_com = {};
-g_com.init_map = [
-	['C0','M0','X0','S0','J0','S1','X1','M1','C1'],
-	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
-	[  0 ,'P0',  0 ,  0 ,  0 ,  0 ,  0 ,'P1',  0 ],
-	['Z0',  0 ,'Z1',  0 ,'Z2',  0 ,'Z3',  0 ,'Z4'],
-	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
-	
-	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
-	['z0',  0 ,'z1',  0 ,'z2',  0 ,'z3',  0 ,'z4'],
-	[  0 ,'p0',  0 ,  0 ,  0 ,  0 ,  0 ,'p1',  0 ],
-	[  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
-	['c0','m0','x0','s0','j0','s1','x1','m1','c1']
-]
+gCommon = {};
+//象棋棋子资源名称R:红色 B:黑色
+gCommon.PngResource = {
+	8:"RJ",
+	9:"RS",
+	10:"RX",
+	11:"RM",
+	12:"RC",
+	13:"RP",
+	14:"RZ",
+	16:"BJ",
+	17:"BS",
+	18:"BX",
+	19:"BM",
+	20:"BC",
+	21:"BP",
+	22:"BZ"
+};
+
+gCommon.InitMap = [
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0, 20, 19, 18, 17, 16, 17, 18, 19, 20,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0, 21,  0,  0,  0,  0,  0, 21,  0,  0,  0,  0,  0,
+  0,  0,  0, 22,  0, 22,  0, 22,  0, 22,  0, 22,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0, 14,  0, 14,  0, 14,  0, 14,  0, 14,  0,  0,  0,  0,
+  0,  0,  0,  0, 13,  0,  0,  0,  0,  0, 13,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0, 12, 11, 10,  9,  8,  9, 10, 11, 12,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
+];
+
+gCommon.QzNodes = {};
+
 /*棋子在棋盘的确定位置保存*/
-g_com.initPos = function(x,y){
+gCommon.BoardPos = function(x,y){
 	var xx = [-271,-203,-135,-67,1,69,137,205,273];
-	var yy = [-314,-246,-178,-110,-42,26,94,162,230,298];
-	return [xx[y],yy[x]];
+	var yy = [298,230,162,94,26,-42,-110,-178,-246,-314];
+	return [xx[x],yy[y]];
 }
 
-g_com.sprite_frame_name = {
+gCommon.sprite_frame_name = {
 	"c0":"CHER","c1":"CHER",
 	"m0":"MAR","m1":"MAR",
 	"x0":"XIANGR","x1":"XIANGR",
@@ -39,7 +65,7 @@ g_com.sprite_frame_name = {
 	"Z0":"ZUB","Z1":"ZUB","Z2":"ZUB","Z3":"ZUB","Z4":"ZUB","Z5":"ZUB",
 }
 
-g_com.arr2Clone = function(arr){
+gCommon.arr2Clone = function(arr){
 	var arrc = new Array();
 	for(var i = 0;i < arr.length;i++){
 		var items = new Array();
@@ -51,14 +77,14 @@ g_com.arr2Clone = function(arr){
 	return arrc;
 };
 
-g_com.bylaw = {}
+gCommon.bylaw = {}
 /*
 * x , y 原始位置坐标
 * nx,ny 新的位置坐标
 * map   棋盘棋子数据
 * my    当前移动的棋子角色
 */
-g_com.bylaw.Z = g_com.bylaw.z = function(x,y,nx,ny,map,my){
+gCommon.bylaw.Z = gCommon.bylaw.z = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -69,29 +95,29 @@ g_com.bylaw.Z = g_com.bylaw.z = function(x,y,nx,ny,map,my){
 		return -1;
 	}
 	/*不可以后退*/
-	if(my == g_com.start_juese && nx < x){
+	if(my == gCommon.start_juese && nx < x){
 		return -1;
 	}
-	if(my != g_com.start_juese && nx > x){
+	if(my != gCommon.start_juese && nx > x){
 		return -1;
 	}
 	/*没有过河不可以左右移动*/
-	if (my == g_com.start_juese && x <= 4 && x == nx){
+	if (my == gCommon.start_juese && x <= 4 && x == nx){
 		return -1;
 	}
-	if (my != g_com.start_juese && x >= 5 && x == nx){
+	if (my != gCommon.start_juese && x >= 5 && x == nx){
 		return -1;
 	}
 	/*判断新位置是否有自己的棋子*/
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my == my){
 		return -1;
-	}else if(map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	}else if(map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return 0;
 }
 
-g_com.bylaw.P = g_com.bylaw.p = function(x,y,nx,ny,map,my){
+gCommon.bylaw.P = gCommon.bylaw.p = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(ny < 0 || ny > 8 || nx < 0 || nx > 9){
 		return -1;
@@ -127,13 +153,13 @@ g_com.bylaw.P = g_com.bylaw.p = function(x,y,nx,ny,map,my){
 	if(num == 0){
 		return 0;
 	}
-	if(num == 2 && map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	if(num == 2 && map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return -1;
 }
 
-g_com.bylaw.C = g_com.bylaw.c = function(x,y,nx,ny,map,my){
+gCommon.bylaw.C = gCommon.bylaw.c = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -169,13 +195,13 @@ g_com.bylaw.C = g_com.bylaw.c = function(x,y,nx,ny,map,my){
 	if(num == 0){
 		return 0;
 	}
-	if(num == 1 && map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	if(num == 1 && map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return -1;
 }
 
-g_com.bylaw.M = g_com.bylaw.m = function(x,y,nx,ny,map,my){
+gCommon.bylaw.M = gCommon.bylaw.m = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -200,16 +226,16 @@ g_com.bylaw.M = g_com.bylaw.m = function(x,y,nx,ny,map,my){
 			return -1;
 		}
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my == my){
 		return -1;
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return 0;
 }
 
-g_com.bylaw.X = g_com.bylaw.x = function(x,y,nx,ny,map,my){
+gCommon.bylaw.X = gCommon.bylaw.x = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -221,25 +247,25 @@ g_com.bylaw.X = g_com.bylaw.x = function(x,y,nx,ny,map,my){
 	if(Math.abs(x - nx) != 2){
 		return -1;
 	}
-	if(my == g_com.start_juese && nx >= 5){
+	if(my == gCommon.start_juese && nx >= 5){
 		return -1;
 	}
-	if(my != g_com.start_juese && nx <= 4){
+	if(my != gCommon.start_juese && nx <= 4){
 		return -1;
 	}
 	if(map[(x + nx) / 2][(y + ny) / 2] != 0){
 		return -1;
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my == my){
 		return -1;
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return 0;
 }
 
-g_com.bylaw.S = g_com.bylaw.s = function(x,y,nx,ny,map,my){
+gCommon.bylaw.S = gCommon.bylaw.s = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -249,22 +275,22 @@ g_com.bylaw.S = g_com.bylaw.s = function(x,y,nx,ny,map,my){
 	if(dist != 2){
 		return -1;
 	}
-	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
+	if(my == gCommon.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
-	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
+	if(my != gCommon.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my == my){
 		return -1;
 	}
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return 0;
 }
 
-g_com.bylaw.J = g_com.bylaw.j = function(x,y,nx,ny,map,my){
+gCommon.bylaw.J = gCommon.bylaw.j = function(x,y,nx,ny,map,my){
 	//出界返回
 	if(nx < 0 || nx > 9 || ny < 0 || ny > 8){
 		return -1;
@@ -274,22 +300,22 @@ g_com.bylaw.J = g_com.bylaw.j = function(x,y,nx,ny,map,my){
 	if(dist != 1){
 		return -1;
 	}
-	if(my == g_com.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
+	if(my == gCommon.start_juese && (nx > 2 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
-	if(my != g_com.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
+	if(my != gCommon.start_juese && (nx < 7 || Math.abs(ny - 4) > 1)){
 		return -1;
 	}
 	/*判断新位置是否有自己的棋子*/
-	if(map[nx][ny] && g_com.mans[map[nx][ny]].my == my){
+	if(map[nx][ny] && gCommon.mans[map[nx][ny]].my == my){
 		return -1;
-	}else if(map[nx][ny] && g_com.mans[map[nx][ny]].my != my){
+	}else if(map[nx][ny] && gCommon.mans[map[nx][ny]].my != my){
 		return 1;
 	}
 	return 0;
 }
 
-g_com.value = {
+gCommon.value = {
 	//车价值
 	c:[
 		[206, 208, 207, 213, 214, 213, 207, 208, 206],
@@ -396,7 +422,7 @@ g_com.value = {
 	]
 }
 
-g_com.keys = {
+gCommon.keys = {
 	"c0":"c","c1":"c",
 	"m0":"m","m1":"m",
 	"x0":"x","x1":"x",
@@ -414,11 +440,11 @@ g_com.keys = {
 	"Z0":"Z","Z1":"Z","Z2":"Z","Z3":"Z","Z4":"Z","Z5":"Z",
 }
 
-g_com.setOtherNodePressActive = function(key,flag){
-	for(var i = 0;i < g_com.initMap.length;i++){
-		for(var j = 0;j < g_com.initMap[i].length;j++){
-			if(g_com.initMap[i][j] != 0 && g_com.initMap[i][j] != key){
-				var node = g_com.manNodes[g_com.initMap[i][j]];
+gCommon.setOtherNodePressActive = function(key,flag){
+	for(var i = 0;i < gCommon.initMap.length;i++){
+		for(var j = 0;j < gCommon.initMap[i].length;j++){
+			if(gCommon.initMap[i][j] != 0 && gCommon.initMap[i][j] != key){
+				var node = gCommon.manNodes[gCommon.initMap[i][j]];
 				var node_com = node.getComponent("qizi_common");
 				if(flag == true){
 					node_com.on_action();
@@ -431,24 +457,24 @@ g_com.setOtherNodePressActive = function(key,flag){
 }
 
 //黑子为红字价值位置的倒置
-g_com.value.C = g_com.arr2Clone(g_com.value.c).reverse();
-g_com.value.M = g_com.arr2Clone(g_com.value.m).reverse();
-g_com.value.X = g_com.value.x;
-g_com.value.S = g_com.value.s;
-g_com.value.J = g_com.value.j;
-g_com.value.P = g_com.arr2Clone(g_com.value.p).reverse();
-g_com.value.Z = g_com.arr2Clone(g_com.value.z).reverse();
+gCommon.value.C = gCommon.arr2Clone(gCommon.value.c).reverse();
+gCommon.value.M = gCommon.arr2Clone(gCommon.value.m).reverse();
+gCommon.value.X = gCommon.value.x;
+gCommon.value.S = gCommon.value.s;
+gCommon.value.J = gCommon.value.j;
+gCommon.value.P = gCommon.arr2Clone(gCommon.value.p).reverse();
+gCommon.value.Z = gCommon.arr2Clone(gCommon.value.z).reverse();
 
 /*存储棋牌上棋子的信息*/
-g_com.mans = {}
-g_com.manNodes = {}
+gCommon.mans = {}
+gCommon.manNodes = {}
 /*存储棋子的移动历史*/
-g_com.ab_history = {}
-g_com.history = []
+gCommon.ab_history = {}
+gCommon.history = []
 
-g_com.game_is_start = false;
-g_com.start_juese = -1;
-g_com.current_step = -1;
-g_com.game_num = 0;
-g_com.touch_mark = null;
-g_com.select_node = null;
+gCommon.game_is_start = false;
+gCommon.start_juese = -1;
+gCommon.current_step = -1;
+gCommon.game_num = 0;
+gCommon.touch_mark = null;
+gCommon.select_node = null;
