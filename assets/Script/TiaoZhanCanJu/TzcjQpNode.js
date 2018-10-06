@@ -55,11 +55,23 @@ cc.Class({
 		cc.log("clickSquare: sq:" + sq);
 		/*游戏开始 并且已经点击过棋子*/
 		if(gGameBoard.isGameOver > 0 && gGameBoard.sqSelected != 0){
-			gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
-			gGameBoard.MakeMove(gGameBoard.mvLast);
-			this.moveNode(gGameBoard.mvLast);
-			gGameBoard.sqSelected = 0;
-			this.playResWav(gGameBoard.IDR_MOVE); // 播放走子或吃子的声音
+			var mv = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
+			if (gGameBoard.LegalMove(mv)) {
+				if (gGameBoard.MakeMove(mv)) {
+					gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
+					this.moveNode(gGameBoard.mvLast);
+					gGameBoard.sqSelected = 0;
+					if (gGameBoard.IsMate()) {
+						// 如果分出胜负，那么播放胜负的声音，并且弹出不带声音的提示框
+						this.playResWav(gGameBoard.IDR_WIN);
+					} else {
+						// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
+						this.playResWav(gGameBoard.Checked() ? gGameBoard.IDR_CHECK : gGameBoard.IDR_MOVE);
+					}
+				} else {
+					this.playResWav(gGameBoard.IDR_ILLEGAL); // 播放被将军的声音
+				}
+			}
 		}
 	},
 	//打开其他棋子的点击事件
@@ -156,14 +168,23 @@ cc.Class({
 	moveNode(mv){
 		var sqSRC = gGameBoard.SRC(mv);
 		var sqDST = gGameBoard.DST(mv);
-		var mvNode = gGameBoard.BoardNodes[sqSRC];
-		if(mvNode != 0){
+		var srcNode = gGameBoard.BoardNodes[sqSRC];
+		var dstNode = gGameBoard.BoardNodes[sqDST];
+		if(srcNode != 0){
+			cc.log("moveNode	srcNode:" + srcNode.name);
 			var pos = gGameBoard.NodePos(sqDST);
 			var move = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
 			var moveMark = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
-			mvNode.runAction(move);
+			srcNode.runAction(move);
 			gGameBoard.selectedMark.runAction(moveMark);
 		}
+		if(dstNode != 0){
+			cc.log("moveNode	dstNode:" + dstNode.name);
+			dstNode.runAction(cc.hide());
+		}
+		//更新nodes表
+		gGameBoard.BoardNodes[sqDST] = srcNode;
+		gGameBoard.BoardNodes[sqSRC] = 0;
 	},
 	PressFunc(event) {
 		var sq = this.getPosFromXY(event.target.getPosition());
@@ -175,11 +196,24 @@ cc.Class({
 			this.playResWav(gGameBoard.IDR_CLICK); // 播放点击的声音
 		}else if (gGameBoard.sqSelected != 0) {
 			// 如果点击的不是自己的子，但有子选中了(一定是自己的子)，那么走这个子
-			gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
-			gGameBoard.MakeMove(gGameBoard.mvLast);
-			this.moveNode(gGameBoard.mvLast);
-			gGameBoard.sqSelected = 0;
-			this.playResWav(gGameBoard.IDR_CAPTURE); // 播放走子或吃子的声音
+			var mv = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
+			if (gGameBoard.LegalMove(mv)) {
+				if (gGameBoard.MakeMove(mv)) {
+					gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
+					this.moveNode(gGameBoard.mvLast);
+					gGameBoard.sqSelected = 0;
+					if (gGameBoard.IsMate()) {
+						// 如果分出胜负，那么播放胜负的声音，并且弹出不带声音的提示框
+						this.playResWav(gGameBoard.IDR_WIN);
+					} else {
+						// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
+						this.playResWav(gGameBoard.Checked() ? gGameBoard.IDR_CHECK : gGameBoard.IDR_CAPTURE);
+					}
+				} else {
+					this.playResWav(gGameBoard.IDR_ILLEGAL); // 播放被将军的声音
+				}
+			}
+			// 如果根本就不符合走法(例如马不走日字)，那么程序不予理会
 		}
 		cc.log("PressFunc: sq:" + sq + " pc:" + pc + " select:" + gGameBoard.sqSelected);
     },
