@@ -162,6 +162,6 @@ cc.Class({
 		cc.director.loadScene("StartGameScene");
 	},
 	update(dt){
-		this.step_num_label.getComponent(cc.Label).string = gCommon.game_num;
+		this.step_num_label.getComponent(cc.Label).string = gGameBoard.nDistance;
 	}
 });

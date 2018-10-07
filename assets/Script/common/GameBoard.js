@@ -21,6 +21,15 @@ gGameBoard.IDR_MOVE 	= 2;
 gGameBoard.IDR_WIN 		= 3;
 gGameBoard.IDR_CHECK 	= 4;
 gGameBoard.IDR_ILLEGAL	= 5;
+gGameBoard.IDR_LOSS 	= 6;
+
+// 其他常数
+gGameBoard.MAX_GEN_MOVES 	= 128; // 最大的生成走法数
+gGameBoard.LIMIT_DEPTH 		= 32;    // 最大的搜索深度
+gGameBoard.MATE_VALUE 		= 10000;  // 最高分值，即将死的分值
+gGameBoard.WIN_VALUE 		= gGameBoard.MATE_VALUE - 100; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了
+gGameBoard.ADVANCED_VALUE 	= 3;  // 先行权分值
+gGameBoard.CLOCKS_PER_SEC 	= 1000;// 1秒 的毫秒数
 
 gGameBoard.selectedMark = null;
 //棋局状态信息
@@ -30,11 +39,18 @@ gGameBoard.sdPlayer = 0;			// 轮到谁走，0=红方，1=黑方
 gGameBoard.isGameOver = 0;			// 0=没有开始，1=开始，2=结束
 gGameBoard.sqSelected = 0;			//选中的棋子
 gGameBoard.mvLast = 0;				//最近的一次移动位置
+gGameBoard.nDistance = 0;			// 距离根节点的步数
+
+// 红、黑双方的子力价值
+gGameBoard.vlWhite = 0;
+gGameBoard.vlBlack = 0;           
 
 gGameBoard.ClearBoard = function(){
 	gGameBoard.sdPlayer = 0;
 	gGameBoard.isGameOver = 0;
 	gGameBoard.sqSelected = 0;
+	gGameBoard.mvLast = 0;
+	gGameBoard.nDistance = 0;
 	for(var i = 0;i < gGameBoard.BoardMap.length;i++){
 		gGameBoard.BoardMap[i] = 0;
 		gGameBoard.BoardNodes[i] = 0;
@@ -100,6 +116,11 @@ gGameBoard.SQUARE_FORWARD = function(sq,sd) {
   return sq - 16 + (sd << 5);
 }
 
+// 翻转格子
+gGameBoard.SQUARE_FLIP = function(sq) {
+  return 254 - sq;
+}
+
 // 是否未过河
 gGameBoard.HOME_HALF = function(sq,sd) {
   return (sq & 0x80) != (sd << 7);
@@ -128,12 +149,25 @@ gGameBoard.SAME_FILE = function(sqSrc,sqDst) {
 gGameBoard.ChangeSide = function() {         // 交换走子方
     gGameBoard.sdPlayer = 1 - gGameBoard.sdPlayer;
 }
+
 gGameBoard.AddQz = function(sq,pc) { // 在棋盘上放一枚棋子
     gGameBoard.BoardMap[sq] = pc;
+	// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
+    if (pc < 16) {
+		gGameBoard.vlWhite += gCommon.cucvlPiecePos[pc - 8][sq];
+    } else {
+		gGameBoard.vlBlack += gCommon.cucvlPiecePos[pc - 16][gGameBoard.SQUARE_FLIP(sq)];
+    }
 }
 
-gGameBoard.DelQz = function(sq) {         // 从棋盘上拿走一枚棋子
+gGameBoard.DelQz = function(sq,pc) {         // 从棋盘上拿走一枚棋子
 	gGameBoard.BoardMap[sq] = 0;
+	// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
+    if (pc < 16) {
+		gGameBoard.vlWhite -= gCommon.cucvlPiecePos[pc - 8][sq];
+    } else {
+		gGameBoard.vlBlack -= gCommon.cucvlPiecePos[pc - 16][gGameBoard.SQUARE_FLIP(sq)];
+    }
 }
 
 // 获得红黑标记(红子是8，黑子是16)
@@ -166,31 +200,47 @@ gGameBoard.MovePiece = function(mv) {
 	var sqDst = gGameBoard.DST(mv);
 	var pc = gGameBoard.BoardMap[sqSrc];
 	var pcCaptured = gGameBoard.BoardMap[sqDst];
-
-	gGameBoard.DelQz(sqSrc);
+	
+	if(pcCaptured != 0){
+		gGameBoard.DelQz(sqDst,pcCaptured);
+	}
+	gGameBoard.DelQz(sqSrc,pc);
 	gGameBoard.AddQz(sqDst, pc);
 	return pcCaptured;
 }
 
 // 撤消搬一步棋的棋子
 gGameBoard.UndoMovePiece = function(mv,pcCaptured) {
-  var sqSrc = gGameBoard.SRC(mv);
-  var sqDst = gGameBoard.DST(mv);
-  var pc = gGameBoard.BoardMap[sqDst];
-  gGameBoard.DelQz(sqDst);
-  gGameBoard.AddQz(sqSrc, pc);
-  gGameBoard.AddQz(sqDst, pcCaptured);
+	var sqSrc = gGameBoard.SRC(mv);
+	var sqDst = gGameBoard.DST(mv);
+	var pc = gGameBoard.BoardMap[sqDst];
+	gGameBoard.DelQz(sqDst,pc);
+	gGameBoard.AddQz(sqSrc, pc);
+	if(pcCaptured != 0){
+		gGameBoard.AddQz(sqDst, pcCaptured);
+	}
 }
 
 
-gGameBoard.MakeMove = function(mv) {         // 走一步棋
-	var pc = gGameBoard.MovePiece(mv);
+gGameBoard.MakeMove = function(mvObj) {         // 走一步棋
+	mvObj.pcCaptured = gGameBoard.MovePiece(mvObj.mv);
 	if (gGameBoard.Checked()) {
-		gGameBoard.UndoMovePiece(mv, pc);
+		gGameBoard.UndoMovePiece(mvObj.mv, mvObj.pcCaptured);
 		return false;
 	}
 	gGameBoard.ChangeSide();
+	gGameBoard.nDistance++;
 	return true;
+}
+
+gGameBoard.UndoMakeMove = function(mvObj) { // 撤消走一步棋
+    gGameBoard.nDistance--;
+    gGameBoard.ChangeSide();
+    gGameBoard.UndoMovePiece(mvObj.mv, mvObj.pcCaptured);
+}
+
+gGameBoard.Evaluate = function(){      // 局面评价函数
+    return (gGameBoard.sdPlayer == 0 ? gGameBoard.vlWhite - gGameBoard.vlBlack : gGameBoard.vlBlack - gGameBoard.vlWhite) + gGameBoard.ADVANCED_VALUE;
 }
 
 // 生成所有走法
@@ -478,11 +528,108 @@ gGameBoard.IsMate = function(){
 	}
 	return true;
 }
-/*
-// 翻转格子
-inline int SQUARE_FLIP(int sq) {
-  return 254 - sq;
+
+// 电脑走的棋
+gGameBoard.mvResult = 0;
+// 历史表
+gGameBoard.nHistoryTable = new Array(65536);
+// "qsort"按历史表排序的比较函数
+gGameBoard.CompareHistory = function(mv1,mv2) {
+  return gGameBoard.nHistoryTable[mv2] - gGameBoard.nHistoryTable[mv1];
 }
+// 超出边界(Fail-Soft)的Alpha-Beta搜索过程
+gGameBoard.SearchFull = function(vlAlpha,vlBeta,nDepth) {
+	// 一个Alpha-Beta完全搜索分为以下几个阶段
+
+	// 1. 到达水平线，则返回局面评价值
+	if (nDepth == 0) {
+		return gGameBoard.Evaluate();
+	}
+
+	// 2. 初始化最佳值和最佳走法
+	var vlBest = -gGameBoard.MATE_VALUE; // 这样可以知道，是否一个走法都没走过(杀棋)
+	var mvBest = 0;           // 这样可以知道，是否搜索到了Beta走法或PV走法，以便保存到历史表
+
+	// 3. 生成全部走法，并根据历史表排序
+	var mvs = gGameBoard.GenerateMoves();
+	mvs.sort(gGameBoard.CompareHistory);
+
+
+	// 4. 逐一走这些走法，并进行递归
+	for (var i = 0; i < mvs.length; i ++) {
+		var mvObj = {"mv":mvs[i], "pcCaptured":0};
+		if (gGameBoard.MakeMove(mvObj)) {
+			var vl = -gGameBoard.SearchFull(-vlBeta, -vlAlpha, nDepth - 1);
+			gGameBoard.UndoMakeMove(mvObj);
+
+			// 5. 进行Alpha-Beta大小判断和截断
+			if (vl > vlBest) {    // 找到最佳值(但不能确定是Alpha、PV还是Beta走法)
+				vlBest = vl;        // "vlBest"就是目前要返回的最佳值，可能超出Alpha-Beta边界
+				if (vl >= vlBeta) { // 找到一个Beta走法
+					mvBest = mvs[i];  // Beta走法要保存到历史表
+					break;            // Beta截断
+				}
+				if (vl > vlAlpha) { // 找到一个PV走法
+					mvBest = mvs[i];  // PV走法要保存到历史表
+					vlAlpha = vl;     // 缩小Alpha-Beta边界
+				}
+			}
+		}
+	}
+
+	// 5. 所有走法都搜索完了，把最佳走法(不能是Alpha走法)保存到历史表，返回最佳值
+	if (vlBest == -gGameBoard.MATE_VALUE) {
+		// 如果是杀棋，就根据杀棋步数给出评价
+		return gGameBoard.nDistance - gGameBoard.MATE_VALUE;
+	}
+	if (mvBest != 0) {
+		// 如果不是Alpha走法，就将最佳走法保存到历史表
+		gGameBoard.nHistoryTable[mvBest] += nDepth * nDepth;
+		if (gGameBoard.nDistance == 0) {
+			// 搜索根节点时，总是有一个最佳走法(因为全窗口搜索不会超出边界)，将这个走法保存下来
+			gGameBoard.mvResult = mvBest;
+		}
+	}
+	return vlBest;
+}
+
+// 迭代加深搜索过程
+gGameBoard.SearchMain = function(){
+
+	// 初始化
+	for(var i = 0;i < 65536;i++){
+		gGameBoard.nHistoryTable[i] = 0;// 清空历史表
+	}
+	var t = Date.now();       // 初始化定时器
+	gGameBoard.nDistance = 0; // 初始步数
+
+	// 迭代加深过程
+	for (var i = 1; i <= gGameBoard.LIMIT_DEPTH; i ++) {
+		var vl = gGameBoard.SearchFull(-gGameBoard.MATE_VALUE, gGameBoard.MATE_VALUE, i);
+		// 搜索到杀棋，就终止搜索
+		if (vl > gGameBoard.WIN_VALUE || vl < -gGameBoard.WIN_VALUE) {
+			break;
+		}
+		// 超过一秒，就终止搜索
+		if (Date.now() - t > gGameBoard.CLOCKS_PER_SEC) {
+			cc.log("search time finish");
+			break;
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+
 
 // 纵坐标水平镜像
 inline int FILE_FLIP(int x) {

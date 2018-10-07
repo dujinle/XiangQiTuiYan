@@ -51,22 +51,28 @@ cc.Class({
     },
 	//点击棋盘的位置检测是否可以走子
 	clickSquare(touckLocal){
+		var self = this;
 		var sq = this.getPosFromXY(touckLocal);
 		cc.log("clickSquare: sq:" + sq);
 		/*游戏开始 并且已经点击过棋子*/
 		if(gGameBoard.isGameOver > 0 && gGameBoard.sqSelected != 0){
 			var mv = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
 			if (gGameBoard.LegalMove(mv)) {
-				if (gGameBoard.MakeMove(mv)) {
+				var mvObj = {"mv":mv,"pcCaptured":0};
+				if (gGameBoard.MakeMove(mvObj)) {
 					gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
-					this.moveNode(gGameBoard.mvLast);
+					this.moveNode(gGameBoard.mvLast,1);
 					gGameBoard.sqSelected = 0;
 					if (gGameBoard.IsMate()) {
 						// 如果分出胜负，那么播放胜负的声音，并且弹出不带声音的提示框
 						this.playResWav(gGameBoard.IDR_WIN);
+						this.setOtherNodePressActive(0,false);
 					} else {
 						// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
 						this.playResWav(gGameBoard.Checked() ? gGameBoard.IDR_CHECK : gGameBoard.IDR_MOVE);
+						setTimeout(function(){
+							self.responseMove();
+						},500);
 					}
 				} else {
 					this.playResWav(gGameBoard.IDR_ILLEGAL); // 播放被将军的声音
@@ -101,62 +107,25 @@ cc.Class({
 		}
 		return near_pos;
 	},
-	make_ai_move(time){
-		var self = this;
-		setTimeout(function(){
-			//AI to move
-			var ret = AI.getAlphaBeta(-Number.POSITIVE_INFINITY,Number.POSITIVE_INFINITY,4,g_com.initMap,g_com.start_juese * -1);
-			cc.log(JSON.stringify(ret));
-			var ai_item = g_com.mans[ret.key];
-			var ai_node = g_com.manNodes[ret.key];
-			
-			var ai_node_pos = g_com.initPos(ret.x,ret.y);
-			var ai_move = cc.moveTo(0.2,cc.v2(ai_node_pos[0],ai_node_pos[1]));
-			var ai_audio_play = cc.callFunc(self.play_audio,self);
-			var spawn = cc.spawn(ai_move,ai_audio_play);
-			ai_node.runAction(spawn);
-			var mask_move = cc.moveTo(0.2,cc.v2(ai_node_pos[0],ai_node_pos[1]));
-			g_com.selectedMark.runAction(cc.sequence(cc.show(),mask_move));
-			
-			if(g_com.initMap[ret.x][ret.y] != 0){
-				ai_item.eatKey = g_com.initMap[ret.x][ret.y];
-				var eat_node = g_com.manNodes[ai_item.eatKey];
-				var eat_node_com = eat_node.getComponent("qizi_common");
-				eat_node.runAction(cc.hide());
-				eat_node_com.off_action();
-			}
-			g_com.initMap[ai_item.cur_pos[0]][ai_item.cur_pos[1]] = 0;
-			g_com.initMap[ret.x][ret.y] = ret.key;
-			ai_item.past_pos = ai_item.cur_pos;
-			ai_item.cur_pos = [ret.x,ret.y];
-			g_com.history[g_com.game_num++] = util.deepClone(ai_item);
-			g_com.current_step = g_com.start_juese;
-		},time);
-	},
-	make_move(pos){
-		var real_pos = g_com.initPos(pos.x,pos.y);
-		var select_item = g_com.mans[this.press_node.name];
-		select_item.eatKey = g_com.initMap[pos.x][pos.y];
-		if(select_item.eatKey != 0){
-			var eat_node = g_com.manNodes[select_item.eatKey];
-			var eat_node_com = eat_node.getComponent("qizi_common");
-			eat_node.runAction(cc.hide());
-			eat_node_com.off_action();
+	
+	// 电脑回应一步棋
+	responseMove(){
+		// 电脑走一步棋
+		gGameBoard.SearchMain();
+		cc.log("responseMove:" + gGameBoard.mvResult);
+		var mvObj = {"mv":gGameBoard.mvResult,"pcCaptured":0};
+		gGameBoard.MakeMove(mvObj);
+		gGameBoard.mvLast = gGameBoard.mvResult;
+		this.moveNode(gGameBoard.mvLast,0);
+
+		if (gGameBoard.IsMate()) {
+			// 如果分出胜负，那么播放胜负的声音，并且弹出不带声音的提示框
+			this.playResWav(gGameBoard.IDR_LOSS);
+			this.setOtherNodePressActive(0,false);
+		} else {
+			// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
+			this.playResWav(gGameBoard.Checked() ? gGameBoard.IDR_CHECK : mvObj.pcCaptured != 0 ? gGameBoard.IDR_CAPTURE : gGameBoard.IDR_MOVE);
 		}
-		
-		g_com.initMap[select_item.cur_pos[0]][select_item.cur_pos[1]] = 0;
-		g_com.initMap[pos.x][pos.y] = this.press_node.name;
-		select_item.past_pos = select_item.cur_pos;
-		select_item.cur_pos = [pos.x,pos.y];
-		g_com.history[g_com.game_num++] = util.deepClone(select_item);
-		
-		/*设置棋子移动位置*/
-		var move = cc.moveTo(0.2,cc.v2(real_pos[0],real_pos[1]));
-		var audio_play = cc.callFunc(this.play_audio,this);
-		var spawn = cc.spawn(move,audio_play);
-		this.press_node.runAction(spawn);
-		var mask_move = cc.moveTo(0.2,cc.v2(real_pos[0],real_pos[1]));
-		g_com.selectedMark.runAction(cc.sequence(cc.show(),mask_move));
 	},
 	playResWav(whichWav){
 		this.audioSources[whichWav].getComponent(cc.AudioSource).play();
@@ -164,8 +133,9 @@ cc.Class({
 	drawSelected(sq){
 		var pos = gGameBoard.NodePos(sq);
 		this.selectedMark.setPosition(cc.v2(pos[0],pos[1]));
+		gGameBoard.selectedMark.runAction(cc.show());
 	},
-	moveNode(mv){
+	moveNode(mv,sdPlayer){
 		var sqSRC = gGameBoard.SRC(mv);
 		var sqDST = gGameBoard.DST(mv);
 		var srcNode = gGameBoard.BoardNodes[sqSRC];
@@ -174,9 +144,15 @@ cc.Class({
 			cc.log("moveNode	srcNode:" + srcNode.name);
 			var pos = gGameBoard.NodePos(sqDST);
 			var move = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
-			var moveMark = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+			
 			srcNode.runAction(move);
-			gGameBoard.selectedMark.runAction(moveMark);
+			//如果是电脑走子则隐藏选择框
+			if(sdPlayer != 0){
+				var moveMark = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+				gGameBoard.selectedMark.runAction(moveMark);
+			}else{
+				gGameBoard.selectedMark.runAction(cc.hide());
+			}
 		}
 		if(dstNode != 0){
 			cc.log("moveNode	dstNode:" + dstNode.name);
@@ -187,6 +163,7 @@ cc.Class({
 		gGameBoard.BoardNodes[sqSRC] = 0;
 	},
 	PressFunc(event) {
+		var self = this;
 		var sq = this.getPosFromXY(event.target.getPosition());
 		var pc = gGameBoard.BoardMap[sq];
 		/*只可以点击自己的棋子*/
@@ -200,14 +177,18 @@ cc.Class({
 			if (gGameBoard.LegalMove(mv)) {
 				if (gGameBoard.MakeMove(mv)) {
 					gGameBoard.mvLast = gGameBoard.MOVE(gGameBoard.sqSelected, sq);
-					this.moveNode(gGameBoard.mvLast);
+					this.moveNode(gGameBoard.mvLast,1);
 					gGameBoard.sqSelected = 0;
 					if (gGameBoard.IsMate()) {
 						// 如果分出胜负，那么播放胜负的声音，并且弹出不带声音的提示框
 						this.playResWav(gGameBoard.IDR_WIN);
+						this.setOtherNodePressActive(0,false);
 					} else {
 						// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
 						this.playResWav(gGameBoard.Checked() ? gGameBoard.IDR_CHECK : gGameBoard.IDR_CAPTURE);
+						setTimeout(function(){
+							self.responseMove();
+						},500);
 					}
 				} else {
 					this.playResWav(gGameBoard.IDR_ILLEGAL); // 播放被将军的声音
