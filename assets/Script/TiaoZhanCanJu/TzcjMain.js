@@ -10,12 +10,11 @@ cc.Class({
 		restartButton:cc.Node,
 		//标签参数
 		boardData:null,
-		nodeList:null,
 		gameNum:cc.Node,
     },
 	onLoad(){
 		this.setGameButtonsActive(false);
-		this.nodeList = new Array();
+		gBoardGame = new gGameBoard();
 	},
     start () {
 		this.onLoadCanJu(gGames["马跃檀溪"]);
@@ -27,15 +26,20 @@ cc.Class({
 	onLoadCanJu(data){
 		cc.log("start load can ju game");
 		/*清空棋盘*/
-		for(var i = 0;i < this.nodeList.length;i++){
-			this.nodeList[i].destroy();
+		gBoardGame.ClearBoard();
+		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+				var sq = gCommon.COORD_XY(x, y);
+				if(gBoardGame.BoardNodes[sq] != 0){
+					gBoardGame.BoardNodes[sq].destroy();
+				}
+			}
 		}
 		//清空选择框
 		if(gCommon.selectedMark != null){
 			gCommon.selectedMark.runAction(cc.hide());
 		}
 		
-		gBoardGame.ClearBoard();
 		this.boardData = data;
 		if(data != null){
 			//棋盘上添加棋子
@@ -50,7 +54,6 @@ cc.Class({
 						qiNode.setPosition(cc.v2(pos[0],pos[1]));
 						gBoardGame.AddQz(sq,pc);
 						gBoardGame.BoardNodes[sq] = qiNode;
-						this.nodeList.push(qiNode);
 					}
 				}
 			}
@@ -70,62 +73,36 @@ cc.Class({
 		this.startButton.getChildByName("stop").active = false;
 		this.onLoadCanJu(this.boardData);
 	},
-	/*回退2步*/
-	back_two(){
-		var self = this;
-		if(gCommon.game_num < 2){
-			cc.log("棋子移动的步数不够");
-			return;
-		}
-		
-		this.count = 0;
-		this.back_callback = function(){
-			self.back_one();
-			self.count = self.count + 1;
-			if(self.count >= 2){
-				self.unschedule(self.back_callback);
+	//悔棋
+	gameBack(){
+		if(gBoardGame.nMoveNum >= 3){
+			for(var i = 1;i < 3;i++){
+				var backMv = gBoardGame.mvsList[gBoardGame.nMoveNum - 1];
+				gBoardGame.UndoMakeMove();
+				var wmv = backMv.wmv;
+				var spSrc = gCommon.SRC(wmv);
+				var spDst = gCommon.DST(wmv);
+				cc.log("src:" + spSrc + " dst:" + spDst);
+				var pcCaptured = backMv.ucpcCaptured;
+				if(gBoardGame.BoardNodes[spDst] != 0){
+					var pos = gCommon.NodePos(spSrc);
+					var move = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+					gBoardGame.BoardNodes[spDst].runAction(move);
+					gBoardGame.BoardNodes[spSrc] = gBoardGame.BoardNodes[spDst];
+					gBoardGame.BoardNodes[spDst] = 0;
+				}
+				if(pcCaptured != 0){
+					var pos = gCommon.NodePos(spDst);
+					var qiNode = this.newNode(spDst,pcCaptured);
+					this.qipan.addChild(qiNode);
+					qiNode.setPosition(cc.v2(pos[0],pos[1]));
+					gBoardGame.BoardNodes[spDst] = qiNode;
+					qiNode.getComponent("QzNode").SetPressEvent(true);
+				}
 			}
 		}
-		this.schedule(this.back_callback,0.2,2,0.000001);
 	},
-	/*回退一步*/
-	back_one(){
-		if(gCommon.game_num <= 0){
-			cc.log("还没有开始移动棋子");
-			return;
-		}
-		/*获取最后一步的棋子*/
-		var back_item = gCommon.history[gCommon.game_num - 1];
-		/*当轮到自己走子时可以悔棋*/
-		/*移动的始末位置*/
-		var cur_pos = [back_item.cur_pos[0],back_item.cur_pos[1]];
-		var past_pos = [back_item.past_pos[0],back_item.past_pos[1]];
-		var eat_key = back_item.eatKey;
-
-		var real_pos = gCommon.initPos(past_pos[0],past_pos[1]);
-
-		var move = cc.moveTo(0.2,cc.v2(real_pos[0],real_pos[1]));
-		gCommon.manNodes[back_item.key].runAction(move);
-		gCommon.touch_mark.runAction(cc.hide());
-
-		gCommon.initMap[past_pos[0]][past_pos[1]] = gCommon.initMap[cur_pos[0]][cur_pos[1]];
-		gCommon.initMap[cur_pos[0]][cur_pos[1]] = 0;
-		gCommon.mans[back_item.key].cur_pos = past_pos;
-		gCommon.mans[back_item.key].past_pos = cur_pos;
-		cc.log("last:" + past_pos[0] + " " + past_pos[1] + " from:" + cur_pos[0] + " " + cur_pos[1]);
-		
-		/*如果这一步有棋子被吃 则还原被吃的棋子*/
-		if(!!eat_key && eat_key != 0){
-			var eat_key_com = gCommon.manNodes[eat_key].getComponent("qizi_common");
-			var eat_real_pos = gCommon.initPos(cur_pos[0],cur_pos[1]);
-			gCommon.initMap[cur_pos[0]][cur_pos[1]] = eat_key;
-						
-			var eat_move = cc.moveTo(0.2,cc.v2(eat_real_pos[0],eat_real_pos[1]));
-			gCommon.manNodes[eat_key].runAction(cc.sequence(cc.show(),eat_move));
-			eat_key_com.on_action();
-		}
-		gCommon.game_num = gCommon.game_num - 1;
-	},
+	//开始游戏
 	startGame(){
 		cc.log("startGame");
 		if(gBoardGame.isGameOver == 0){
@@ -145,21 +122,13 @@ cc.Class({
 			gBoardGame.isGameOver = 0;
 		}
 	},
-	exit(){
-		gCommon.mans = {};
-		/*存储棋子的移动历史*/
-		gCommon.ab_history = {};
-		gCommon.history = [];
-
-		gCommon.game_is_start = false;
-		gCommon.start_juese = -1;
-		gCommon.current_step = -1;
-		gCommon.game_num = 0;
-		gCommon.touch_mark = null;
-		gCommon.select_node = null;
-		cc.director.loadScene("StartGameScene");
+	onExit(){
+		gBoardGame.ClearBoard();
+		cc.director.loadScene("MainGameScene");
+		this.node.destroy();
+		gBoardGame = null;
 	},
 	update(dt){
-		this.gameNum.getComponent(cc.Label).string = gBoardGame.nMoveNum;
+		this.gameNum.getComponent(cc.Label).string = gBoardGame.nMoveNum - 1;
 	}
 });

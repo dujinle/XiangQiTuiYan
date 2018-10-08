@@ -360,6 +360,7 @@ gCommon.IN_FORT = function(sq) {
 gCommon.NodePos = function(sq){
 	var y = (sq >> 4) - gCommon.RANK_TOP;
 	var x = (sq & 15) - gCommon.FILE_LEFT;
+	cc.log("NodePos: x:" + x + " y:" + y);
 	return gCommon.BoardPos(x,y);
 }
 // 根据纵坐标和横坐标获得格子
@@ -451,4 +452,4 @@ gCommon.DST = function(mv) {
 	return mv >> 8;
 }
 
-var gBoardGame = new gGameBoard();
+gBoardGame = null;

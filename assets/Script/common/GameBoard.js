@@ -146,8 +146,8 @@ function gGameBoard(){
 gGameBoard.prototype = {
 	constructor:gGameBoard,
 	SetIrrev:function() {           // 清空(初始化)历史走法信息
-		this.mvsList[0].Set(0, 0, this.Checked(), this.zobr.dwKey);
-		this.nMoveNum = 1;
+		//this.mvsList[0].Set(0, 0, this.Checked(), this.zobr.dwKey);
+		//this.nMoveNum = 1;
 	},
 	InCheck:function(){      // 是否被将军
 		return this.mvsList[this.nMoveNum - 1].ucbCheck;
@@ -162,7 +162,7 @@ gGameBoard.prototype = {
 		this.nDistance = 0;
 		this.vlWhite = 0;
 		this.vlBlack = 0;
-		this.nMoveNum = 0;
+		this.nMoveNum = 1;
 		this.mvLast = 0;
 		for(var i = 0;i < this.BoardMap.length;i++){
 			this.BoardMap[i] = 0;
