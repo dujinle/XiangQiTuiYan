@@ -1,6 +1,43 @@
-
 /*公共数据接口*/
 gCommon = {};
+
+// 棋子编号
+gCommon.PIECE_KING = 0;
+gCommon.PIECE_ADVISOR = 1;
+gCommon.PIECE_BISHOP = 2;
+gCommon.PIECE_KNIGHT = 3;
+gCommon.PIECE_ROOK = 4;
+gCommon.PIECE_CANNON = 5;
+gCommon.PIECE_PAWN = 6;
+
+// 棋盘范围
+gCommon.RANK_TOP		= 3;
+gCommon.RANK_BOTTOM 	= 12;
+gCommon.FILE_LEFT 	= 3;
+gCommon.FILE_RIGHT 	= 11;
+
+gCommon.IDR_CLICK 	= 0;
+gCommon.IDR_CAPTURE 	= 1;
+gCommon.IDR_MOVE 	= 2;
+gCommon.IDR_WIN 		= 3;
+gCommon.IDR_CHECK 	= 4;
+gCommon.IDR_ILLEGAL	= 5;
+gCommon.IDR_LOSS 	= 6;
+gCommon.IDR_DRAW 	= 7;
+
+// 其他常数
+gCommon.MAX_GEN_MOVES 	= 128; // 最大的生成走法数
+gCommon.MAX_MOVES 		= 256;     // 最大的历史走法数
+gCommon.LIMIT_DEPTH 	= 32;    // 最大的搜索深度
+gCommon.MATE_VALUE 		= 10000;  // 最高分值，即将死的分值
+gCommon.DRAW_VALUE 		= 20;     // 和棋时返回的分数(取负值)
+gCommon.NULL_MARGIN 	= 400;   // 空步裁剪的子力边界
+gCommon.NULL_DEPTH 		= 2;      // 空步裁剪的裁剪深度
+gCommon.WIN_VALUE 		= gCommon.MATE_VALUE - 100; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了
+gCommon.ADVANCED_VALUE 	= 3;  // 先行权分值
+gCommon.CLOCKS_PER_SEC 	= 1000;// 1秒 的毫秒数
+
+gCommon.selectedMark = null;
 //象棋棋子资源名称R:红色 B:黑色
 gCommon.PngResource = {
 	8:"RJ",
@@ -38,6 +75,7 @@ gCommon.InitMap = [
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
 ];
 
+gCommon.BoardMap = new Array(256);
 // 子力位置价值表
 gCommon.cucvlPiecePos = [
   [ // 帅(将)
@@ -160,6 +198,13 @@ gCommon.cucvlPiecePos = [
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
   ]
+];
+
+// MVV/LVA每种子力的价值
+gCommon.cucMvvLva = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  5, 1, 1, 3, 4, 3, 2, 0,
+  5, 1, 1, 3, 4, 3, 2, 0
 ];
 
 // 判断棋子是否在棋盘中的数组
@@ -285,7 +330,6 @@ gCommon.ccKnightDelta = [[-33, -31], [-18, 14], [-14, 18], [31, 33]];
 // 马被将军的步长，以仕(士)的步长作为马腿
 gCommon.ccKnightCheckDelta = [[-33, -18], [-31, -14], [14, 31], [18, 33]];
 
-gCommon.QzNodes = {};
 
 /*棋子在棋盘的确定位置保存*/
 gCommon.BoardPos = function(x,y){
@@ -293,3 +337,118 @@ gCommon.BoardPos = function(x,y){
 	var yy = [298,230,162,94,26,-42,-110,-178,-246,-314];
 	return [xx[x],yy[y]];
 }
+
+// 获得格子的横坐标
+gCommon.RANK_Y = function(sq) {
+	return sq >> 4;
+}
+
+// 获得格子的纵坐标
+gCommon.FILE_X = function(sq) {
+	return sq & 15;
+}
+// 判断棋子是否在棋盘中
+gCommon.IN_BOARD = function(sq) {
+  return gCommon.ccInBoard[sq] != 0;
+}
+
+// 判断棋子是否在九宫中
+gCommon.IN_FORT = function(sq) {
+  return gCommon.ccInFort[sq] != 0;
+}
+
+gCommon.NodePos = function(sq){
+	var y = (sq >> 4) - gCommon.RANK_TOP;
+	var x = (sq & 15) - gCommon.FILE_LEFT;
+	return gCommon.BoardPos(x,y);
+}
+// 根据纵坐标和横坐标获得格子
+gCommon.COORD_XY = function(x,y) {
+	return x + (y << 4);
+}
+
+// 走法是否符合帅(将)的步长
+gCommon.KING_SPAN = function(sqSrc,sqDst){
+  return gCommon.ccLegalSpan[sqDst - sqSrc + 256] == 1;
+}
+
+// 走法是否符合仕(士)的步长
+gCommon.ADVISOR_SPAN = function(sqSrc,sqDst) {
+  return gCommon.ccLegalSpan[sqDst - sqSrc + 256] == 2;
+}
+
+// 走法是否符合相(象)的步长
+gCommon.BISHOP_SPAN = function(sqSrc,sqDst) {
+  return gCommon.ccLegalSpan[sqDst - sqSrc + 256] == 3;
+}
+
+// 相(象)眼的位置
+gCommon.BISHOP_PIN = function(sqSrc,sqDst) {
+  return (sqSrc + sqDst) >> 1;
+}
+
+// 马腿的位置
+gCommon.KNIGHT_PIN = function(sqSrc,sqDst) {
+  return sqSrc + gCommon.ccKnightPin[sqDst - sqSrc + 256];
+}
+
+// 格子水平镜像
+gCommon.SQUARE_FORWARD = function(sq,sd) {
+  return sq - 16 + (sd << 5);
+}
+
+// 翻转格子
+gCommon.SQUARE_FLIP = function(sq) {
+  return 254 - sq;
+}
+
+// 是否未过河
+gCommon.HOME_HALF = function(sq,sd) {
+  return (sq & 0x80) != (sd << 7);
+}
+
+// 是否已过河
+gCommon.AWAY_HALF = function(sq,sd) {
+  return (sq & 0x80) == (sd << 7);
+}
+
+// 是否在河的同一边
+gCommon.SAME_HALF = function(sqSrc,sqDst) {
+  return ((sqSrc ^ sqDst) & 0x80) == 0;
+}
+
+// 是否在同一行
+gCommon.SAME_RANK = function(sqSrc,sqDst) {
+  return ((sqSrc ^ sqDst) & 0xf0) == 0;
+}
+
+// 是否在同一列
+gCommon.SAME_FILE = function(sqSrc,sqDst) {
+  return ((sqSrc ^ sqDst) & 0x0f) == 0;
+}
+
+// 获得红黑标记(红子是8，黑子是16)
+gCommon.SIDE_TAG = function(sd) {
+	return 8 + (sd << 3);
+}
+
+// 获得对方红黑标记
+gCommon.OPP_SIDE_TAG = function(sd) {
+  return 16 - (sd << 3);
+}
+
+// 根据起点和终点获得走法
+gCommon.MOVE = function(sqSrc,sqDst) {
+	return sqSrc + sqDst * 256;
+}
+// 获得走法的起点
+gCommon.SRC = function(mv) {
+	return mv & 255;
+}
+
+// 获得走法的终点
+gCommon.DST = function(mv) {
+	return mv >> 8;
+}
+
+var gBoardGame = new gGameBoard();
