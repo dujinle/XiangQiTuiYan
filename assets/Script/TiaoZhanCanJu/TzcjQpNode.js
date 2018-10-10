@@ -184,9 +184,11 @@ cc.Class({
 					vlRep = gBoardGame.RepValue(vlRep);
 					// 注意："vlRep"是对电脑来说的分值
 					this.playResWav(vlRep > gCommon.WIN_VALUE ? gCommon.IDR_LOSS : vlRep < -gCommon.WIN_VALUE ? gCommon.IDR_WIN : gCommon.IDR_DRAW);
+					this.setOtherNodePressActive(0,false);
 					gBoardGame.isGameOver = 0;
 				} else if (gBoardGame.nMoveNum > 100) {
 					this.playResWav(gCommon.IDR_DRAW);
+					this.setOtherNodePressActive(0,false);
 					gBoardGame.isGameOver = 0;
 				} else {
 					// 如果没有分出胜负，那么播放将军、吃子或一般走子的声音
@@ -199,7 +201,7 @@ cc.Class({
 					},500);
 				}
 			} else {
-				this.playResWav(gBoardGame.IDR_ILLEGAL); // 播放被将军的声音
+				this.playResWav(gCommon.IDR_ILLEGAL); // 播放被将军的声音
 			}
 		}
 		// 如果根本就不符合走法(例如马不走日字)，那么程序不予理会

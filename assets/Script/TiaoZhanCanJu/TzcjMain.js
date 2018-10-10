@@ -26,11 +26,11 @@ cc.Class({
 	onLoadCanJu(data){
 		cc.log("start load can ju game");
 		/*清空棋盘*/
-		gBoardGame.ClearBoard();
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var sq = gCommon.COORD_XY(x, y);
-				if(gBoardGame.BoardNodes[sq] != 0){
+				if(gBoardGame.BoardNodes[sq] != 0 && gBoardGame.BoardNodes[sq] != null){
+					gBoardGame.BoardNodes[sq].removeFromParent();
 					gBoardGame.BoardNodes[sq].destroy();
 				}
 			}
@@ -39,7 +39,7 @@ cc.Class({
 		if(gCommon.selectedMark != null){
 			gCommon.selectedMark.runAction(cc.hide());
 		}
-		
+		gBoardGame.ClearBoard();
 		this.boardData = data;
 		if(data != null){
 			//棋盘上添加棋子

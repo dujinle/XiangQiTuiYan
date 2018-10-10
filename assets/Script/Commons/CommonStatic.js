@@ -1,4 +1,5 @@
 /*公共数据接口*/
+cc.log("load gCommon......");
 gCommon = {};
 
 // 棋子编号
@@ -26,16 +27,29 @@ gCommon.IDR_LOSS 	= 6;
 gCommon.IDR_DRAW 	= 7;
 
 // 其他常数
-gCommon.MAX_GEN_MOVES 	= 128; // 最大的生成走法数
-gCommon.MAX_MOVES 		= 256;     // 最大的历史走法数
-gCommon.LIMIT_DEPTH 	= 32;    // 最大的搜索深度
-gCommon.MATE_VALUE 		= 10000;  // 最高分值，即将死的分值
-gCommon.DRAW_VALUE 		= 20;     // 和棋时返回的分数(取负值)
-gCommon.NULL_MARGIN 	= 400;   // 空步裁剪的子力边界
-gCommon.NULL_DEPTH 		= 2;      // 空步裁剪的裁剪深度
+gCommon.MAX_GEN_MOVES 	= 128; 	 // 最大的生成走法数
+gCommon.MAX_MOVES 		= 256;   // 最大的历史走法数
+gCommon.LIMIT_DEPTH 	= 64;    // 最大的搜索深度
+gCommon.MATE_VALUE 		= 10000; // 最高分值，即将死的分值
 gCommon.WIN_VALUE 		= gCommon.MATE_VALUE - 100; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了
-gCommon.ADVANCED_VALUE 	= 3;  // 先行权分值
-gCommon.CLOCKS_PER_SEC 	= 1000;// 1秒 的毫秒数
+gCommon.DRAW_VALUE 		= 20;    // 和棋时返回的分数(取负值)
+gCommon.ADVANCED_VALUE 	= 3;  	// 先行权分值
+gCommon.NULL_MARGIN 	= 400;   // 空步裁剪的子力边界
+gCommon.NULL_DEPTH 		= 2;     // 空步裁剪的裁剪深度
+
+gCommon.CLOCKS_PER_SEC 	= 1000;	// 1秒 的毫秒数
+gCommon.HASH_SIZE = 1 << 20; 	// 置换表大小
+gCommon.HASH_ALPHA = 1;      	// ALPHA节点的置换表项
+gCommon.HASH_BETA = 2;       	// BETA节点的置换表项
+gCommon.HASH_PV = 3;         	// PV节点的置换表项
+
+
+// 走法排序阶段
+gCommon.PHASE_HASH = 0;
+gCommon.PHASE_KILLER_1 = 1;
+gCommon.PHASE_KILLER_2 = 2;
+gCommon.PHASE_GEN_MOVES = 3;
+gCommon.PHASE_REST = 4;
 
 gCommon.selectedMark = null;
 //象棋棋子资源名称R:红色 B:黑色

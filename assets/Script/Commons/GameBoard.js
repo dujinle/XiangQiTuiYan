@@ -1,3 +1,4 @@
+cc.log("load GameBoard......");
 // RC4密码流生成器
 function RC4Struct(){
 	this.x = 0;
@@ -105,10 +106,6 @@ Zobrist.InitZobrist = function() {	// 初始化Zobrist表
 	}
 }
 
-Search = {};
-Search.nHistoryTable = new Array(65536);	// 历史表
-Search.mvResult = 0;						// 电脑走的棋
-
 // "qsort"按历史表排序的比较函数
 CompareHistory = function(mv1,mv2) {
 	return Search.nHistoryTable[mv2] - Search.nHistoryTable[mv1];
@@ -146,7 +143,7 @@ function gGameBoard(){
 gGameBoard.prototype = {
 	constructor:gGameBoard,
 	SetIrrev:function() {           // 清空(初始化)历史走法信息
-		//this.mvsList[0].Set(0, 0, this.Checked(), this.zobr.dwKey);
+		this.mvsList[0].Set(0, 0, this.Checked(), this.zobr.dwKey);
 		//this.nMoveNum = 1;
 	},
 	InCheck:function(){      // 是否被将军
@@ -179,21 +176,22 @@ gGameBoard.prototype = {
 	AddQz:function(sq,pc) { // 在棋盘上放一枚棋子
 		this.BoardMap[sq] = pc;
 		// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
-		if (pc < 16) {
+		if (pc < 16 && pc != 0) {
 			this.vlWhite += gCommon.cucvlPiecePos[pc - 8][sq];
 			this.zobr.Xor(Zobrist.Table[pc - 8][sq]);
-		} else {
+		} else if(pc != 0){
 			this.vlBlack += gCommon.cucvlPiecePos[pc - 16][gCommon.SQUARE_FLIP(sq)];
 			this.zobr.Xor(Zobrist.Table[pc - 9][sq]);
 		}
 	},
 	DelQz:function(sq,pc) {         // 从棋盘上拿走一枚棋子
 		this.BoardMap[sq] = 0;
+		//cc.log("DelQz:" + sq + " " + pc);
 		// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
-		if (pc < 16) {
+		if (pc < 16 && pc != 0) {
 			this.vlWhite -= gCommon.cucvlPiecePos[pc - 8][sq];
 			this.zobr.Xor(Zobrist.Table[pc - 8][sq]);
-		} else {
+		} else if(pc != 0){
 			this.vlBlack -= gCommon.cucvlPiecePos[pc - 16][gCommon.SQUARE_FLIP(sq)];
 			this.zobr.Xor(Zobrist.Table[pc - 9][sq]);
 		}
@@ -202,12 +200,13 @@ gGameBoard.prototype = {
 	MovePiece:function(mv) {
 		var sqSrc = gCommon.SRC(mv);
 		var sqDst = gCommon.DST(mv);
-		var pc = this.BoardMap[sqSrc];
 		var pcCaptured = this.BoardMap[sqDst];
+		//cc.log("MakeMove pc:" + this.BoardMap[sqSrc] + " sqSrc:" + sqSrc + " sqDst:" + sqDst);
 		
 		if(pcCaptured != 0){
 			this.DelQz(sqDst,pcCaptured);
 		}
+		var pc = this.BoardMap[sqSrc];
 		this.DelQz(sqSrc,pc);
 		this.AddQz(sqDst,pc);
 		return pcCaptured;
@@ -262,7 +261,7 @@ gGameBoard.prototype = {
 		return (this.sdPlayer == 0 ? this.vlWhite - this.vlBlack : this.vlBlack - this.vlWhite) + gCommon.ADVANCED_VALUE;
 	},
 	// 生成所有走法
-	GenerateMoves:function(bCapture = false){
+	GenerateMoves:function(bCapture){
 		// 生成所有走法，需要经过以下几个步骤：
 		var mvs = new Array();
 		var pcSelfSide = gCommon.SIDE_TAG(this.sdPlayer);
@@ -277,9 +276,9 @@ gGameBoard.prototype = {
 
 			// 2. 根据棋子确定走法
 			switch (pcSrc - pcSelfSide) {
-			case gCommon.PIECE_KING:
+			case gCommon.PIECE_KING:		//老将
 				for (var i = 0; i < 4; i ++) {
-					sqDst = sqSrc + gCommon.ccKingDelta[i];
+					var sqDst = sqSrc + gCommon.ccKingDelta[i];
 					if (!gCommon.IN_FORT(sqDst)) {
 						continue;
 					}
@@ -289,9 +288,9 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_ADVISOR:
+			case gCommon.PIECE_ADVISOR:		//士
 				for (var i = 0; i < 4; i ++) {
-					sqDst = sqSrc + gCommon.ccAdvisorDelta[i];
+					var sqDst = sqSrc + gCommon.ccAdvisorDelta[i];
 					if (!gCommon.IN_FORT(sqDst)) {
 						continue;
 					}
@@ -301,7 +300,7 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_BISHOP:
+			case gCommon.PIECE_BISHOP:		//相
 				for (var i = 0; i < 4; i ++) {
 					var sqDst = sqSrc + gCommon.ccAdvisorDelta[i];
 					if (!(gCommon.IN_BOARD(sqDst) && gCommon.HOME_HALF(sqDst, this.sdPlayer) && this.BoardMap[sqDst] == 0)) {
@@ -314,7 +313,7 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_KNIGHT:
+			case gCommon.PIECE_KNIGHT:		//马
 				for (var i = 0; i < 4; i ++) {
 					var sqDst = sqSrc + gCommon.ccKingDelta[i];
 					if (this.BoardMap[sqDst] != 0) {
@@ -332,7 +331,7 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_ROOK:
+			case gCommon.PIECE_ROOK:		//车
 				for (var i = 0; i < 4; i ++) {
 					var nDelta = gCommon.ccKingDelta[i];
 					var sqDst = sqSrc + nDelta;
@@ -352,7 +351,7 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_CANNON:
+			case gCommon.PIECE_CANNON:		//炮
 				for (var i = 0; i < 4; i ++) {
 					var nDelta = gCommon.ccKingDelta[i];
 					var sqDst = sqSrc + nDelta;
@@ -380,7 +379,7 @@ gGameBoard.prototype = {
 					}
 				}
 				break;
-			case gCommon.PIECE_PAWN:
+			case gCommon.PIECE_PAWN:		//兵
 				var sqDst = gCommon.SQUARE_FORWARD(sqSrc, this.sdPlayer);
 				if (gCommon.IN_BOARD(sqDst)) {
 					var pcDst = this.BoardMap[sqDst];
@@ -535,7 +534,7 @@ gGameBoard.prototype = {
 	},
 	// 判断是否被杀
 	IsMate:function(){
-		var mvs = this.GenerateMoves();
+		var mvs = this.GenerateMoves(false);
 		for (var i = 0; i < mvs.length; i ++) {
 			var pcCaptured = this.MovePiece(mvs[i]);
 			if (!this.Checked()) {
@@ -548,6 +547,9 @@ gGameBoard.prototype = {
 		return true;
 	},
 	// 检测重复局面
+	DrawValue:function(){                 // 和棋分值
+		return (this.nDistance & 1) == 0 ? -gCommon.DRAW_VALUE : gCommon.DRAW_VALUE;
+	},
 	RepStatus:function(nRecur){
 		var idx = 1;
 		var bSelfSide = false;
@@ -575,7 +577,7 @@ gGameBoard.prototype = {
 	RepValue:function(nRepStatus){        // 重复局面分值
 		var vlReturn = ((nRepStatus & 2) == 0 ? 0 : this.nDistance - gCommon.MATE_VALUE) +
 			((nRepStatus & 4) == 0 ? 0 : gCommon.MATE_VALUE - this.nDistance);
-		return vlReturn == 0 ? -gCommon.DRAW_VALUE : vlReturn;
+		return vlReturn == 0 ? this.DrawValue() : vlReturn;
 	},
 	// 静态(Quiescence)搜索过程
 	SearchQuiesc:function(vlAlpha,vlBeta) {
@@ -594,7 +596,7 @@ gGameBoard.prototype = {
 		}
 
 		// 3. 初始化最佳值
-		vlBest = -gCommon.MATE_VALUE; // 这样可以知道，是否一个走法都没走过(杀棋)
+		var vlBest = -gCommon.MATE_VALUE; // 这样可以知道，是否一个走法都没走过(杀棋)
 
 		if (this.InCheck()) {
 			// 4. 如果被将军，则生成全部走法
@@ -642,6 +644,8 @@ gGameBoard.prototype = {
 	// 超出边界(Fail-Soft)的Alpha-Beta搜索过程
 	SearchFull:function(vlAlpha,vlBeta,nDepth,bNoNull) {
 		// 一个Alpha-Beta完全搜索分为以下几个阶段
+		var HashSort = new SortStruct();
+		var mvHash = 0;
 		if (this.nDistance > 0) {
 			// 1. 到达水平线，则调用静态搜索(注意：由于空步裁剪，深度可能小于零)
 			if (nDepth <= 0) {
@@ -658,8 +662,13 @@ gGameBoard.prototype = {
 			if (this.nDistance == gCommon.LIMIT_DEPTH) {
 				return this.Evaluate();
 			}
-
-			// 1-3. 尝试空步裁剪(根节点的Beta值是"MATE_VALUE"，所以不可能发生空步裁剪)
+			var param = {"vlAlpha":vlAlpha,"vlBeta":vlBeta,"nDepth":nDepth,"mv":mvHash};
+			 // 1-3. 尝试置换表裁剪，并得到置换表走法
+			var vl = HashTable.ProbeHash(param,this);
+			if (vl > -gCommon.MATE_VALUE) {
+				return vl;
+			}
+			// 1-4. 尝试空步裁剪(根节点的Beta值是"MATE_VALUE"，所以不可能发生空步裁剪)
 			if (!bNoNull && !this.InCheck() && this.NullOkay()) {
 				this.NullMove();
 				var vl = -this.SearchFull(-vlBeta, 1 - vlBeta, nDepth - gCommon.NULL_DEPTH - 1, true);
@@ -668,46 +677,51 @@ gGameBoard.prototype = {
 					return vl;
 				}
 			}
+			mvHash = param.mv;
 		}
-
 		// 2. 初始化最佳值和最佳走法
+		var nHashFlag = gCommon.HASH_ALPHA;
 		var vlBest = -gCommon.MATE_VALUE; // 这样可以知道，是否一个走法都没走过(杀棋)
 		var mvBest = 0;           // 这样可以知道，是否搜索到了Beta走法或PV走法，以便保存到历史表
 
-		// 3. 生成全部走法，并根据历史表排序
-		var mvs = this.GenerateMoves(false);
-		mvs.sort(CompareHistory);
-
+		// 3. 初始化走法排序结构
+		HashSort.Init(mvHash,this);
 		// 4. 逐一走这些走法，并进行递归
-		for (var i = 0; i < mvs.length; i ++) {
-			if (this.MakeMove(mvs[i])) {
+		var mv = 0;
+		while ((mv = HashSort.Next(this)) != 0) {
+			//cc.log("HashSort.Next:" + mv);
+			if (this.MakeMove(mv)) {
 				// 将军延伸
-				var vl = -this.SearchFull(-vlBeta, -vlAlpha, this.InCheck() ? nDepth : nDepth - 1);
+				var vl = -this.SearchFull(-vlBeta, -vlAlpha, this.InCheck() ? nDepth : nDepth - 1,false);
 				this.UndoMakeMove();
 
 				// 5. 进行Alpha-Beta大小判断和截断
 				if (vl > vlBest) {    // 找到最佳值(但不能确定是Alpha、PV还是Beta走法)
 					vlBest = vl;        // "vlBest"就是目前要返回的最佳值，可能超出Alpha-Beta边界
 					if (vl >= vlBeta) { // 找到一个Beta走法
-						mvBest = mvs[i];  // Beta走法要保存到历史表
+						nHashFlag = gCommon.HASH_BETA;
+						mvBest = mv;      // Beta走法要保存到历史表
 						break;            // Beta截断
 					}
 					if (vl > vlAlpha) { // 找到一个PV走法
-						mvBest = mvs[i];  // PV走法要保存到历史表
+						nHashFlag = gCommon.HASH_PV;
+						mvBest = mv;      // PV走法要保存到历史表
 						vlAlpha = vl;     // 缩小Alpha-Beta边界
 					}
 				}
 			}
 		}
-
 		// 5. 所有走法都搜索完了，把最佳走法(不能是Alpha走法)保存到历史表，返回最佳值
 		if (vlBest == -gCommon.MATE_VALUE) {
 			// 如果是杀棋，就根据杀棋步数给出评价
 			return this.nDistance - gCommon.MATE_VALUE;
 		}
+
+		// 记录到置换表
+		HashTable.RecordHash({"nHashFlag":nHashFlag,"vlBest":vlBest,"nDepth":nDepth,"mv":mvBest},this);
 		if (mvBest != 0) {
 			// 如果不是Alpha走法，就将最佳走法保存到历史表
-			Search.nHistoryTable[mvBest] += nDepth * nDepth;
+			HashTable.SetBestMove(mvBest, nDepth,this);
 			if (this.nDistance == 0) {
 				// 搜索根节点时，总是有一个最佳走法(因为全窗口搜索不会超出边界)，将这个走法保存下来
 				Search.mvResult = mvBest;
@@ -718,16 +732,13 @@ gGameBoard.prototype = {
 	// 迭代加深搜索过程
 	SearchMain:function(){
 		// 初始化
-		Search.mvResult = 0;
-		for(var i = 0;i < 65536;i++){
-			Search.nHistoryTable[i] = 0;// 清空历史表
-		}
+		Search.Init();
 		var t = Date.now();       // 初始化定时器
 		this.nDistance = 0; // 初始步数
 
 		// 迭代加深过程
 		for (var i = 1; i <= gCommon.LIMIT_DEPTH; i ++) {
-			var vl = this.SearchFull(-gCommon.MATE_VALUE, gCommon.MATE_VALUE, i);
+			var vl = this.SearchFull(-gCommon.MATE_VALUE, gCommon.MATE_VALUE, i,false);
 			// 搜索到杀棋，就终止搜索
 			if (vl > gCommon.WIN_VALUE || vl < -gCommon.WIN_VALUE) {
 				break;
