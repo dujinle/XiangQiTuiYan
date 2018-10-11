@@ -4,33 +4,26 @@ cc.Class({
     properties: {
 		bg_sprite:cc.Node,
 		qipan:cc.Node,
-		qizi_room:cc.Node,
 		//按钮参数
-		back_two_node:cc.Node,
-		back_one_node:cc.Node,
-		forward_node:cc.Node,
-		forward_two_node:cc.Node,
-		start_node:cc.Node,
-		clear_button:cc.Node,
-		restart_button:cc.Node,
+		backButton:cc.Node,
+		startButton:cc.Node,
+		clearButton:cc.Node,
+		restartButton:cc.Node,
 		//标签参数
-		current_step_label:cc.Node,
-		past_step_label:cc.Node,
-		step_num_label:cc.Node,
+		currStepLabel:cc.Node,
+		pastStepLabel:cc.Node,
+		stepNumLabel:cc.Node,
 	},
 	onLoad () {
-		this.off_one_button(false);
-		this.clear_button.getComponent(cc.Button).interactable = true;
-		this.current_step_label.getComponent(cc.Label).string = "";
-		this.past_step_label.getComponent(cc.Label).string = "";
-		this.step_num_label.getComponent(cc.Label).string = "";
+		this.setGameButtonsActive(false);
+		
+		this.currStepLabel.getComponent(cc.Label).string = "";
+		this.pastStepLabel.getComponent(cc.Label).string = "";
+		this.stepNumLabel.getComponent(cc.Label).string = "";
 	},
-	off_one_button(flag){
-		this.back_two_node.getComponent(cc.Button).interactable = flag;
-		this.back_one_node.getComponent(cc.Button).interactable = flag;
-		this.forward_node.getComponent(cc.Button).interactable = flag;
-		this.forward_two_node.getComponent(cc.Button).interactable = flag;
-		this.restart_button.getComponent(cc.Button).interactable = flag;
+	setGameButtonsActive(flag){
+		this.backButton.getComponent(cc.Button).interactable = flag;
+		this.restartButton.getComponent(cc.Button).interactable = flag;
 	},
 	/*重新开始游戏*/
 	restart_game(){
@@ -269,20 +262,9 @@ cc.Class({
 		this.pop_qipan.setPosition(this.node.convertToNodeSpaceAR(cc.v2(size.width/2,size.height/2)));
 	},
 	update(dt){
-		var g_root_node = cc.director.getScene().getChildByName("RootNode");
-		var g_root_node_com = g_root_node.getComponent("root_node");
-		if(g_root_node_com.current_step == "red"){
-			this.current_step_label.getComponent(cc.Label).string = "黑";
-			this.past_step_label.getComponent(cc.Label).string = "红";
-		}else if(g_root_node_com.current_step == "black"){
-			this.current_step_label.getComponent(cc.Label).string = "红";
-			this.past_step_label.getComponent(cc.Label).string = "黑";
-		}
-		if(g_root_node_com.current_idx == 0){
-			this.step_num_label.getComponent(cc.Label).string = "";
-		}else{
-			this.step_num_label.getComponent(cc.Label).string = g_root_node_com.current_idx;
-		}
+		this.currStepLabel.getComponent(cc.Label).string = "黑";
+		this.pastStepLabel.getComponent(cc.Label).string = "红";
+		this.stepNumLabel.getComponent(cc.Label).string = "";
 	},
 	/*通过图像识别结果进行残局复盘*/
 	callback(data){
