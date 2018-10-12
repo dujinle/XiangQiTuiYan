@@ -33,8 +33,8 @@ cc.Class({
 			}
 		});
 	},
-	button_main_cb(){
-		cc.director.loadScene("MainScene");
+	button_tuiyan_cb(){
+		cc.director.loadScene("TuiYanGameScene");
 	},
 	button_canju_cb(){
 		cc.director.loadScene("CanJuGameScene");

@@ -525,8 +525,8 @@
     "target": {
       "__id__": 2
     },
-    "component": "start_game",
-    "handler": "button_main_cb",
+    "component": "MainGame",
+    "handler": "button_tuiyan_cb",
     "customEventData": ""
   },
   {
@@ -695,7 +695,7 @@
     "target": {
       "__id__": 2
     },
-    "component": "start_game",
+    "component": "MainGame",
     "handler": "button_canju_cb",
     "customEventData": ""
   },

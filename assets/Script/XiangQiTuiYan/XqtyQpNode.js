@@ -20,34 +20,42 @@ cc.Class({
 		this.node.on("pressed", this.PressFunc, this);
 		gCommon.selectedMark = this.selectedMark;
 		
-		this.node.on(cc.Node.EventType.TOUCH_START,function (event) {
-			var target = event.getCurrentTarget();
-			var touchLocal = target.convertToNodeSpaceAR(event.getLocation());
-			var beginPos = gCommon.BoardPos(0,9);
-			var endPos = gCommon.BoardPos(8,0);
-			//左右上下增加100像素
-			var width = Math.abs(beginPos[0] - endPos[0]) + 100;
-			var height = Math.abs(beginPos[1] - endPos[1]) + 100;
-			var rect = cc.rect(beginPos[0] - 50,beginPos[1] - 50,width,height);
-			if(rect.contains(touchLocal)){
-				cc.log("<qipan_node> touch begin org_local: x:" + touchLocal.x + " y:" + touchLocal.y);
-				self.touchOk = true;
-				return true;
-			}
-			self.touchOk = false;
-			return false;
-		},this);
-		
-		this.node.on(cc.Node.EventType.TOUCH_END, function (event) {
-			var target = event.getCurrentTarget();
-			var touckLocal = target.convertToNodeSpaceAR(event.getLocation());
-			if(self.touchOk == true){
-				self.clickSquare(touckLocal);
-				self.touchOk = false;
-			}
-		},this);
+		this.onTouchAction();
 		this.onLoadQzs();
     },
+	onTouchAction(){
+		this.node.on(cc.Node.EventType.TOUCH_START,this.funcTouchStart,this);
+		this.node.on(cc.Node.EventType.TOUCH_END, this.funcTouchEnd,this);
+	},
+	offTouchAction(){
+		this.node.off(cc.Node.EventType.TOUCH_START,this.funcTouchStart,this);
+		this.node.off(cc.Node.EventType.TOUCH_END, this.funcTouchEnd,this);
+	},
+	funcTouchStart(event){
+		var target = event.getCurrentTarget();
+		var touchLocal = target.convertToNodeSpaceAR(event.getLocation());
+		var beginPos = gCommon.BoardPos(0,9);
+		var endPos = gCommon.BoardPos(8,0);
+		//左右上下增加100像素
+		var width = Math.abs(beginPos[0] - endPos[0]) + 100;
+		var height = Math.abs(beginPos[1] - endPos[1]) + 100;
+		var rect = cc.rect(beginPos[0] - 50,beginPos[1] - 50,width,height);
+		if(rect.contains(touchLocal)){
+			cc.log("<qipan_node> touch begin org_local: x:" + touchLocal.x + " y:" + touchLocal.y);
+			this.touchOk = true;
+			return true;
+		}
+		this.touchOk = false;
+		return false;
+	},
+	funcTouchEnd(event){
+		var target = event.getCurrentTarget();
+		var touckLocal = target.convertToNodeSpaceAR(event.getLocation());
+		if(this.touchOk == true){
+			this.clickSquare(touckLocal);
+			this.touchOk = false;
+		}
+	},
 	//加载棋子
 	onLoadQzs(){
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
@@ -55,12 +63,20 @@ cc.Class({
 				var sq = gCommon.COORD_XY(x, y);
 				var pc = gCommon.InitMap[sq];
 				if (pc != 0) {
-					var tmp = cc.instantiate(this.QiNodes[pc - 8]);
-					tmp.addComponent("QzNode").SetPressEvent(true);
-					this.node.addChild(tmp);
+					var tmp = this.QiNodes[pc - 8];
+					var qiNode = this.newNode(pc);
+					this.node.addChild(qiNode);
+					qiNode.setPosition(tmp.getPosition());
 				}
 			}
 		}
+	},
+	newNode(key){
+		var QzNode = new cc.Node(key);
+        QzNode.addComponent(cc.Sprite).spriteFrame = g_assets[gCommon.PngResource[key]];
+		QzNode.addComponent("QzNode").SetPressEvent(true);
+		cc.log("new node:" + key + " sprite:" + gCommon.PngResource[key]);
+		return QzNode;
 	},
 	//点击棋盘的位置检测是否可以走子
 	clickSquare(touckLocal){
@@ -70,6 +86,9 @@ cc.Class({
 		/*游戏开始 并且已经点击过棋子*/
 		if(gBoardGame.isGameOver > 0 && gBoardGame.sqSelected != 0){
 			this.gameMove(sq);
+		}
+		if(gBoardGame.isGameOver == 0 && gBoardGame.sqSelected != 0){
+			this.baiQz(sq);
 		}
 	},
 	//打开其他棋子的点击事件
@@ -136,19 +155,41 @@ cc.Class({
 		gBoardGame.BoardNodes[sqSRC] = 0;
 	},
 	PressFunc(event) {
-		var sq = this.getPosFromXY(event.target.getPosition());
-		var pc = gBoardGame.BoardMap[sq];
-		/*只可以点击自己的棋子*/
-		if((pc & gCommon.SIDE_TAG(gBoardGame.sdPlayer)) != 0) {
-			gBoardGame.sqSelected = sq;
-			this.drawSelected(sq);
+		if(gBoardGame.isGameOver == 0){
+			gBoardGame.sqSelected = event.target;
+			this.selectedMark.setPosition(event.target.getPosition());
+			this.selectedMark.runAction(cc.show());
 			this.playResWav(gCommon.IDR_CLICK); // 播放点击的声音
-		}else if (gBoardGame.sqSelected != 0) {
-			// 如果点击的不是自己的子，但有子选中了(一定是自己的子)，那么走这个子
-			this.gameMove(sq);
+		}else{
+			var sq = this.getPosFromXY(event.target.getPosition());
+			var pc = gBoardGame.BoardMap[sq];
+			/*只可以点击自己的棋子*/
+			if((pc & gCommon.SIDE_TAG(gBoardGame.sdPlayer)) != 0) {
+				gBoardGame.sqSelected = sq;
+				this.drawSelected(sq);
+				this.playResWav(gCommon.IDR_CLICK); // 播放点击的声音
+			}else if (gBoardGame.sqSelected != 0) {
+				// 如果点击的不是自己的子，但有子选中了(一定是自己的子)，那么走这个子
+				this.gameMove(sq);
+			}
+			cc.log("PressFunc: sq:" + sq + " pc:" + pc + " select:" + gBoardGame.sqSelected);
 		}
-		cc.log("PressFunc: sq:" + sq + " pc:" + pc + " select:" + gBoardGame.sqSelected);
     },
+	//游戏开始之前摆棋子到棋盘的位置
+	baiQz(sq){
+		cc.log("baiQz:" + gBoardGame.BoardMap[sq]);
+		if(gBoardGame.BoardMap[sq] == 0){
+			gBoardGame.AddQz(sq,parseInt(gBoardGame.sqSelected.name));
+			gBoardGame.BoardNodes[sq] = gBoardGame.sqSelected;
+			var pos = gCommon.NodePos(sq);
+			var move = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+			gBoardGame.sqSelected.runAction(move);
+			var moveMark = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+			this.selectedMark.runAction(cc.sequence(cc.show(),moveMark));
+			this.playResWav(gCommon.IDR_MOVE);
+			gBoardGame.sqSelected = 0;
+		}
+	},
 	gameMove(sq){
 		var self = this;
 		var mv = gCommon.MOVE(gBoardGame.sqSelected, sq);

@@ -15,8 +15,9 @@ cc.Class({
 		stepNumLabel:cc.Node,
 	},
 	onLoad () {
+		gBoardGame = new gGameBoard();
 		this.setGameButtonsActive(false);
-		
+		gBoardGame.ClearBoard();
 		this.currStepLabel.getComponent(cc.Label).string = "";
 		this.pastStepLabel.getComponent(cc.Label).string = "";
 		this.stepNumLabel.getComponent(cc.Label).string = "";
