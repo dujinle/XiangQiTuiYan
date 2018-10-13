@@ -4,6 +4,7 @@ cc.Class({
     properties: {
 		selectedMark:cc.Node,
 		touchOk:false,
+		boardData:null,
 		audioSources:{
 			type:cc.AudioSource,
 			default:[]
@@ -11,15 +12,16 @@ cc.Class({
 		QiNodes:{
 			type:cc.Node,
 			default:[]
-		}
+		},
+		nodeList:null,
     },
 
     // use this for initialization
     onLoad: function () {
-		var self = this;
+		this.nodeList = new Array();
 		this.node.on("pressed", this.PressFunc, this);
 		gCommon.selectedMark = this.selectedMark;
-		
+		this.boardData = null;
 		this.onTouchAction();
 		this.onLoadQzs();
     },
@@ -67,6 +69,34 @@ cc.Class({
 					var qiNode = this.newNode(pc);
 					this.node.addChild(qiNode);
 					qiNode.setPosition(tmp.getPosition());
+					this.nodeList.push(qiNode);
+				}
+			}
+		}
+	},
+	setStart(){
+		this.boardData = {
+			"name":"",
+			"board":util.deepClone(gBoardGame.BoardMap),
+			"start":0,
+			"content":""
+		};
+		for(var i = 0;i < this.nodeList.length;i++){
+			this.nodeList[i].getComponent("QzNode").SetPressEvent(false);
+		}
+		for(var i = 0;i < gBoardGame.BoardNodes.length;i++){
+			if(gBoardGame.BoardNodes[i] != null && gBoardGame.BoardNodes[i] != 0){
+				gBoardGame.BoardNodes[i].getComponent("QzNode").SetPressEvent(true);
+			}
+		}
+	},
+	reGame(){
+		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+				var sq = gCommon.COORD_XY(x, y);
+				var board = this.boardData.board;
+				if(board[sq] != 0 && board[sq] != null){
+					this.baiQz(sq);
 				}
 			}
 		}
@@ -221,9 +251,6 @@ cc.Class({
 					if (gBoardGame.Captured()) {
 						gBoardGame.SetIrrev();
 					}
-					setTimeout(function(){
-						self.responseMove();
-					},500);
 				}
 			} else {
 				this.playResWav(gCommon.IDR_ILLEGAL); // 播放被将军的声音
