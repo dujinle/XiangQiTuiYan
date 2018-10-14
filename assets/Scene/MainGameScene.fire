@@ -1088,11 +1088,7 @@
     "_children": [],
     "_active": true,
     "_level": 0,
-    "_components": [
-      {
-        "__id__": 27
-      }
-    ],
+    "_components": [],
     "_prefab": null,
     "_opacity": 255,
     "_color": {
@@ -1138,26 +1134,5 @@
     "_zIndex": 0,
     "groupIndex": 0,
     "_id": "d6qcmKAQtGB4kwPKB8eAr7"
-  },
-  {
-    "__type__": "e8853wXKQFH2Z76IK37dCZl",
-    "_name": "",
-    "_objFlags": 0,
-    "node": {
-      "__id__": 26
-    },
-    "_enabled": true,
-    "data": null,
-    "game_status": false,
-    "select_node": [],
-    "init_node": [],
-    "qizi_2d": null,
-    "my": null,
-    "mhistory": [],
-    "current_step": null,
-    "current_idx": 0,
-    "from_sprite": null,
-    "end_sprite": null,
-    "_id": "f1ZJz90B5ATLpXlSnv+0Kj"
   }
 ]

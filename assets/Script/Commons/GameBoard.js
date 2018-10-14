@@ -131,6 +131,7 @@ function gGameBoard(){
 	this.nMoveNum = 0;					//棋子走的步数
 	this.mvLast = 0;					//上一步棋
 
+
 	// 红、黑双方的子力价值
 	this.vlWhite = 0;
 	this.vlBlack = 0;
@@ -161,9 +162,12 @@ gGameBoard.prototype = {
 		this.vlBlack = 0;
 		this.nMoveNum = 1;
 		this.mvLast = 0;
-		for(var i = 0;i < this.BoardMap.length;i++){
-			this.BoardMap[i] = 0;
-			this.BoardNodes[i] = 0;
+		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+				var sq = gCommon.COORD_XY(x, y);
+				this.BoardMap[sq] = 0;
+				this.BoardNodes[sq] = 0;
+			}
 		}
 		this.zobr.InitZero();
 		this.SetIrrev();

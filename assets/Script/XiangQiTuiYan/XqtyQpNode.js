@@ -4,7 +4,6 @@ cc.Class({
     properties: {
 		selectedMark:cc.Node,
 		touchOk:false,
-		boardData:null,
 		audioSources:{
 			type:cc.AudioSource,
 			default:[]
@@ -21,9 +20,7 @@ cc.Class({
 		this.nodeList = new Array();
 		this.node.on("pressed", this.PressFunc, this);
 		gCommon.selectedMark = this.selectedMark;
-		this.boardData = null;
 		this.onTouchAction();
-		this.onLoadQzs();
     },
 	onTouchAction(){
 		this.node.on(cc.Node.EventType.TOUCH_START,this.funcTouchStart,this);
@@ -58,55 +55,20 @@ cc.Class({
 			this.touchOk = false;
 		}
 	},
-	//加载棋子
-	onLoadQzs(){
+	reGame(boardData){
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var sq = gCommon.COORD_XY(x, y);
-				var pc = gCommon.InitMap[sq];
-				if (pc != 0) {
-					var tmp = this.QiNodes[pc - 8];
-					var qiNode = this.newNode(pc);
-					this.node.addChild(qiNode);
-					qiNode.setPosition(tmp.getPosition());
-					this.nodeList.push(qiNode);
-				}
-			}
-		}
-	},
-	setStart(){
-		this.boardData = {
-			"name":"",
-			"board":util.deepClone(gBoardGame.BoardMap),
-			"start":0,
-			"content":""
-		};
-		for(var i = 0;i < this.nodeList.length;i++){
-			this.nodeList[i].getComponent("QzNode").SetPressEvent(false);
-		}
-		for(var i = 0;i < gBoardGame.BoardNodes.length;i++){
-			if(gBoardGame.BoardNodes[i] != null && gBoardGame.BoardNodes[i] != 0){
-				gBoardGame.BoardNodes[i].getComponent("QzNode").SetPressEvent(true);
-			}
-		}
-	},
-	reGame(){
-		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
-			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
-				var sq = gCommon.COORD_XY(x, y);
-				var board = this.boardData.board;
+				var board = boardData.board;
 				if(board[sq] != 0 && board[sq] != null){
-					this.baiQz(sq);
+					if(gCommon.nodeDic[board[sq]].length > 0){
+						gBoardGame.sqSelected = gCommon.nodeDic[board[sq]].shift();
+						this.baiQz(sq);
+					}
 				}
 			}
 		}
-	},
-	newNode(key){
-		var QzNode = new cc.Node(key);
-        QzNode.addComponent(cc.Sprite).spriteFrame = g_assets[gCommon.PngResource[key]];
-		QzNode.addComponent("QzNode").SetPressEvent(true);
-		cc.log("new node:" + key + " sprite:" + gCommon.PngResource[key]);
-		return QzNode;
+		gBoardGame.sdPlayer = boardData.start;
 	},
 	//点击棋盘的位置检测是否可以走子
 	clickSquare(touckLocal){

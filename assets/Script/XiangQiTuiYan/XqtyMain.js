@@ -17,20 +17,45 @@ cc.Class({
 	onLoad () {
 		gBoardGame = new gGameBoard();
 		this.setGameButtonsActive(false);
-		gBoardGame.ClearBoard();
+		
 		this.currStepLabel.getComponent(cc.Label).string = "";
 		this.pastStepLabel.getComponent(cc.Label).string = "";
 		this.stepNumLabel.getComponent(cc.Label).string = "";
+		this.initGameQz();
+		this.node.on("itemPress", this.itemPressFunc, this);
 	},
 	setGameButtonsActive(flag){
 		this.backButton.getComponent(cc.Button).interactable = flag;
 		this.restartButton.getComponent(cc.Button).interactable = flag;
 		this.clearButton.getComponent(cc.Button).interactable = flag;
 	},
+	//加载棋子
+	initGameQz(){
+		gBoardGame.ClearBoard();
+		
+		for (var sq = 0; sq < gCommon.InitMap.length; sq ++) {
+			var pc = gCommon.InitMap[sq];
+			if (pc != 0) {
+				var tmp = this.qipan.getComponent("XqtyQpNode").QiNodes[pc - 8];
+				var qiNode = this.newNode(pc);
+				this.qipan.addChild(qiNode);
+				qiNode.setPosition(tmp.getPosition());
+				gBoardGame.BoardNodes[sq] = qiNode;
+				gCommon.nodeDic[pc].push(qiNode);
+			}
+		}
+	},
+	newNode(key){
+		var QzNode = new cc.Node(key);
+        QzNode.addComponent(cc.Sprite).spriteFrame = g_assets[gCommon.PngResource[key]];
+		QzNode.addComponent("QzNode").SetPressEvent(true);
+		cc.log("new node:" + key + " sprite:" + gCommon.PngResource[key]);
+		return QzNode;
+	},
 	/*重新开始游戏*/
 	gameRestart(){
 		this.clearGame();
-		this.qipan.getComponent("XqtyQpNode").reGame();
+		this.qipan.getComponent("XqtyQpNode").reGame(this.boardData);
 	},
 	/*游戏结束棋子归位到原来的位置*/
 	clearGame(){
@@ -38,12 +63,24 @@ cc.Class({
 		this.startButton.getChildByName("stop").active = false;
 		this.setGameButtonsActive(false);
 		/*清空棋盘*/
+		for(var key in gCommon.nodeDic){
+			while(gCommon.nodeDic.length > 0){
+				gCommon.nodeDic.shift();
+			}
+		}
+		for (var sq = 0; sq < gCommon.InitMap.length; sq ++) {
+			var pc = gCommon.InitMap[sq];
+			if (pc != 0) {
+				gCommon.nodeDic[pc].push(gBoardGame.BoardNodes[sq]);
+			}
+		}
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var sq = gCommon.COORD_XY(x, y);
+				var pc = gBoardGame.BoardMap[sq];
 				if(gBoardGame.BoardNodes[sq] != 0 && gBoardGame.BoardNodes[sq] != null){
-					gBoardGame.BoardNodes[sq].removeFromParent();
-					gBoardGame.BoardNodes[sq].destroy();
+					var tmp = this.qipan.getComponent("XqtyQpNode").QiNodes[pc - 8];
+					gBoardGame.BoardNodes[sq].setPosition(tmp.getPosition());
 				}
 			}
 		}
@@ -52,7 +89,6 @@ cc.Class({
 			gCommon.selectedMark.runAction(cc.hide());
 		}
 		gBoardGame.ClearBoard();
-		this.qipan.getComponent("XqtyQpNode").onLoadQzs();
 	},
 	//悔棋
 	gameBack(){
@@ -86,13 +122,23 @@ cc.Class({
 	//开始游戏
 	startGame(){
 		cc.log("startGame");
+		//清空选择框
+		if(gCommon.selectedMark != null){
+			gCommon.selectedMark.runAction(cc.hide());
+		}
 		if(gBoardGame.isGameOver == 0){
 			//开始游戏
 			this.startButton.getChildByName("start").active = false;
 			this.startButton.getChildByName("stop").active = true;
 			gBoardGame.isGameOver = 1;
 			this.setGameButtonsActive(true);
-			this.qipan.getComponent("XqtyQpNode").setStart();
+			this.boardData = {
+				"name":"",
+				"board":util.deepClone(gBoardGame.BoardMap),
+				"start":0,
+				"content":""
+			};
+			this.setQqzAction();
 		}else{
 			//停止游戏
 			this.setGameButtonsActive(false);
@@ -101,9 +147,38 @@ cc.Class({
 			gBoardGame.isGameOver = 0;
 		}
 	},
+	//关闭棋盘外的棋子action 打开棋盘内的棋子action
+	setQqzAction(){
+		for(var i = 0;i < gBoardGame.BoardNodes.length;i++){
+			if(gBoardGame.BoardNodes[i] != null && gBoardGame.BoardNodes[i] != 0){
+				gBoardGame.BoardNodes[i].getComponent("QzNode").SetPressEvent(false);
+			}
+		}
+		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+				var sq = gCommon.COORD_XY(x, y);
+				var pc = gBoardGame.BoardMap[sq];
+				if(gBoardGame.BoardNodes[sq] != 0 && gBoardGame.BoardNodes[sq] != null){
+					gBoardGame.BoardNodes[sq].getComponent("QzNode").SetPressEvent(true);
+				}
+			}
+		}
+	},
 	onExit(){
 		gBoardGame.ClearBoard();
-		cc.director.loadScene("StartGameScene");
+		cc.director.loadScene("MainGameScene");
+	},
+	PopToolMenu(){
+		this.PMenu = cc.instantiate(g_assets["PopToolMenu"]);
+		this.node.addChild(this.PMenu);
+		this.PMenu.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+	},
+	itemPressFunc(event){
+		cc.log("itemPressFunc");
+		var popItem = event.target.getComponent("PopSvItem");
+		this.clearGame();
+		this.qipan.getComponent("XqtyQpNode").reGame(popItem.data);
+		this.PMenu.destroy();
 	},
 	load_qipan(){
 		var size = cc.winSize;

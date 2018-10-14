@@ -946,8 +946,8 @@
     "target": {
       "__id__": 2
     },
-    "component": "main",
-    "handler": "load_qipan",
+    "component": "XqtyMain",
+    "handler": "PopToolMenu",
     "customEventData": ""
   },
   {
@@ -3833,7 +3833,6 @@
       "__id__": 37
     },
     "touchOk": false,
-    "boardData": null,
     "audioSources": [
       {
         "__id__": 45
@@ -5463,8 +5462,10 @@
   },
   {
     "__type__": "cc.ClickEvent",
-    "target": null,
-    "component": "TzcjMain",
+    "target": {
+      "__id__": 2
+    },
+    "component": "XqtyMain",
     "handler": "gameRestart",
     "customEventData": ""
   },

@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0.39765625,
+      "y": 0.39765625,
       "z": 1
     },
     "_quat": {
@@ -55,7 +55,7 @@
     "_zIndex": 0,
     "groupIndex": 0,
     "autoReleaseAssets": false,
-    "_id": "addb3c0e-d907-4724-b496-367237a37930"
+    "_id": "e1132050-e92d-4942-8681-99f7d99f013c"
   },
   {
     "__type__": "cc.Node",
@@ -63,16 +63,16 @@
     "_parent": {
       "__id__": 1
     },
-    "_id": "cd2yIRJjRMvKdSjnumWhad",
+    "_id": "66zzZjWbhEgZpCXDUSXwQm",
     "_prefab": {
       "__id__": 3
     },
-    "_name": "PopQzScene",
+    "_name": "PopToolMenu",
     "_active": true,
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
+      "x": 360,
+      "y": 640,
       "z": 0
     },
     "_rotationX": 0,
@@ -84,9 +84,9 @@
       "__id__": 2
     },
     "asset": {
-      "__uuid__": "6db144f1-4a9e-421c-83d4-73a3adeaec20"
+      "__uuid__": "bc11308d-749b-4280-87dd-9ae3b74a4fb6"
     },
-    "fileId": "cd2yIRJjRMvKdSjnumWhad",
+    "fileId": "66zzZjWbhEgZpCXDUSXwQm",
     "sync": true
   }
 ]
