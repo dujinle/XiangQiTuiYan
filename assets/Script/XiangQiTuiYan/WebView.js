@@ -1,38 +1,67 @@
+var gImage 		= null;
+var gSelectFile = null;
+var gBaseData 	= null;
+function myCreateObjectURL(blob) {
+	gSelectFile = blob;
+	if (window.URL != undefined){
+		return window['URL']['createObjectURL'](blob);
+	}else{
+		return window['webkitURL']['createObjectURL'](blob);
+	}
+}
+
+function readImg64(){
+	if(gSelectFile != null){
+		var reader = new FileReader();
+		reader.readAsDataURL(gSelectFile);
+		reader.onload = function(e){
+			gBaseData = this.result;
+		}
+	}
+}
+
 cc.Class({
     extends: cc.Component,
     properties: {
-        webview: cc.WebView
+		img: {
+			default: null,
+			type: cc.Node
+		},
     },
 
-    onLoad: function () {
-        var scheme = "TestKey";// 这里是与内部页面约定的关键字
-        function jsCallback (url) {
-            // 这里的返回值是内部页面的 url 数值，
-            // 需要自行解析自己需要的数据
-            var str = url.replace(scheme + '://', '');
-            var data = JSON.stringify(str);// {a: 0, b: 1}
-        }
-
-        this.webview.setJavascriptInterfaceScheme(scheme);
-        this.webview.setOnJSCallback(jsCallback);
-    }
+    onLoad:function() {
+		cc.log("webview onload");
+		gImage = this.img;
+	},
+	onUpload: function (activate) {
+		var fileInput = document.getElementById("fileInput");
+		if (fileInput == null) {
+			fileInput = document.createElement("input");
+			fileInput.id = "fileInput";
+			fileInput.type = "file";
+			fileInput.accept = "image/*";
+			fileInput.style.height = "0px";
+			fileInput.style.display = "block";
+			fileInput.style.overflow = "hidden";
+			// fileInput.multiple = "multiple"; // 多选
+			document.body.insertBefore(fileInput, document.body.firstChild);
+			fileInput.addEventListener('change', this.tmpSelectFile, false);
+		}
+		setTimeout(function () { fileInput.click() }, 100);
+	},
+	tmpSelectFile:function(evt) {
+		var file = evt.target.files[0];
+		if(file){
+			var url = myCreateObjectURL(file);
+			cc.loader.load({url: url, type: 'png'}, function (err, texture) {
+				var mylogo  = new cc.SpriteFrame(texture); 
+				gImage.getComponent('cc.Sprite').spriteFrame = mylogo;
+				evt.target.value = '';
+			});
+		}
+	},
+	//开始检测图片
+	onRegImg:function(){
+		readImg64();
+	}
 });
-
-// 因此当你需要通过内部页面交互 WebView 时，
-// 应当设置内部页面 url 为：TestKey://(后面你想要回调到 WebView 的数据) 
-// WebView 内部页面代码
-/*
-<html>
-<body>
-    <dev>
-        <input type="button" value="触发" onclick="onClick()"/>
-    </dev>
-</body>
-<script>
-    function onClick () {
-        // 其中一个设置URL方案
-        document.location = 'TestKey://{a: 0, b: 1}';
-    }
-</script>
-</html>
-*/

@@ -96,7 +96,6 @@ var bridge_android_ios = function(type,data){
 		g_root_node_com.chooser_cb(data);
 	}
 };
-
 var gGames = [
 	{
 		"name":"马跃檀溪",
