@@ -69,6 +69,24 @@ gCommon.PngResource = {
 	21:"BP",
 	22:"BZ"
 };
+//残局推演识别图片标签置换表
+gCommon.CovertCJTYMap = {
+	"ZUB"	:22,
+	"PAOB"	:21,
+	"CHEB"	:20,
+	"MAB"	:19,
+	"XIANGB":18,
+	"SHIB"	:17,
+	"JIANGB":16,
+	"ZUR"	:14,
+	"PAOR"	:13,
+	"CHER"	:12,
+	"MAR"	:11,
+	"XIANGR":10,
+	"SHIR"	:9,
+	"JIANGR":8
+};
+
 // 棋盘初始设置棋子在棋盘外
 gCommon.InitMap = [
  20, 19, 18, 17, 16, 17, 18, 19, 20, 21, 21, 22, 22, 22, 22, 22,

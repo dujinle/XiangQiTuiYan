@@ -1,91 +1,4 @@
 var g_assets = {};
-g_qizi_obj = {
-	"兵1":{
-		"type":"red",
-		"num":5,
-		"name":"兵",
-		"target":"ZUR"
-	},
-	"车1":{
-		"type":"red",
-		"num":2,
-		"name":"车",
-		"target":"CHER"
-	},
-	"马1":{
-		"type":"red",
-		"num":2,
-		"name":"马",
-		"target":"MAR"
-	},
-	"炮1":{
-		"type":"red",
-		"num":2,
-		"name":"炮",
-		"target":"PAOR"
-	},
-	"相1":{
-		"type":"red",
-		"num":2,
-		"name":"相",
-		"target":"XIANGR"
-	},
-	"士1":{
-		"type":"red",
-		"num":2,
-		"name":"士",
-		"target":"SHIR"
-	},
-	"帅1":{
-		"type":"red",
-		"num":1,
-		"name":"帅",
-		"target":"JIANGR"
-	},
-	"兵2":{
-		"type":"black",
-		"num":5,
-		"name":"兵",
-		"target":"ZUB"
-	},
-	"车2":{
-		"type":"black",
-		"num":2,
-		"name":"车",
-		"target":"CHEB"
-	},
-	"马2":{
-		"type":"black",
-		"num":2,
-		"name":"马",
-		"target":"MAB"
-		
-	},
-	"炮2":{
-		"type":"black",
-		"num":2,
-		"name":"炮",
-		"target":"PAOB"
-	},
-	"相2":{
-		"type":"black",
-		"num":2,
-		"name":"相",
-		"target":"XIANGB"
-	},
-	"士2":{
-		"type":"black",
-		"num":2,
-		"name":"士",
-		"target":"SHIB"
-	},
-	"帅2":{
-		"type":"black",
-		"num":1,
-		"name":"帅",
-		"target":"JIANGB"
-	}
-};
 
 /*链接android 和 ios的桥梁函数*/
 var bridge_android_ios = function(type,data){
@@ -121,3 +34,41 @@ var gGames = [
 		"start":0
 	}
 ];
+
+var result = {"code": 0, 
+	"message": "enjoy success", 
+	"result": {
+		"size": [476, 551], 
+		"objs": [
+			[["XIANGB: 99%"], 311.8445038795471, 370.2447557449341, 13.674749514088035, 69.40382444858551],
+			[["CHER: 99%"], 155.58684039115906, 214.01815938949585, 66.44989801198244, 120.36199793219566], 
+			[["SHIB: 99%"], 213.1919013261795, 265.07924795150757, 65.28922736644745, 119.86429142951965],
+			[["CHEB: 99%"], 416.2226655483246, 473.01241993904114, 117.94909270107746, 172.05539241433144],
+			[["CHER: 99%"], 311.6751525402069, 369.2397127151489, 169.35200649499893, 223.05956134200096],
+			[["JIANGR: 99%"], 264.23558378219604, 317.0060739517212, 481.17300432920456, 537.3546739816666],
+			[["ZUR: 99%"], 210.0168261528015, 265.6349949836731, 221.80618959665298, 276.41977751255035], 
+			[["ZUB: 99%"], 208.8735272884369, 265.68237590789795, 431.08844870328903, 484.4948573708534], 
+			[["PAOR: 99%"], 363.5732946395874, 423.59522247314453, 273.7534868121147, 327.5769252181053], 
+			[["CHEB: 99%"], 105.47380298376083, 159.7362744808197, 118.04395727813244, 171.16293957829475],
+			[["JIANGB: 99%"], 208.85304284095764, 263.35211396217346, 14.9237368311733, 66.77647633850574],
+			[["XIANGB: 99%"], 104.21288877725601, 164.8116935491562, 12.23865425772965, 70.34261757135391],
+			[["SHIB: 99%"], 263.1718394756317, 318.0392334461212, 119.31588484346867, 170.96826767921448]
+		]
+	}
+};
+
+var getSQFromPos = function(pos){
+	var near_pos = -1;
+	var near_dist = Math.exp(10);
+	for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+		for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+			var itemPos = gCommon.BoardPos(x - gCommon.FILE_LEFT,y - gCommon.RANK_TOP);
+			var dist = Math.sqrt((pos.x - itemPos[0])*(pos.x - itemPos[0]) + (pos.y - itemPos[1])*(pos.y - itemPos[1]));
+			if(dist <= near_dist){
+				near_dist = dist;
+				near_pos = gCommon.COORD_XY(x,y);
+			}
+		}
+	}
+	return near_pos;
+}
