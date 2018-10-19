@@ -177,9 +177,17 @@ cc.Class({
 		cc.log("itemPressFunc");
 		if(event.target.name == "tupian_content"){
 			var popItem = event.target.getComponent("WebView");
+			//加载棋子位置修正界面
+			this.PSelect = cc.instantiate(g_assets["PopSelectPos"]);
+			this.node.addChild(this.PSelect);
+			this.PSelect.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+			this.PSelect.getComponent("PopSelectPos").data = popItem.data;
+			this.PMenu.destroy();
+		}else if(event.target.name == "PopSelectPos"){
+			var popItem = event.target.getComponent("PopSelectPos");
 			this.clearGame();
 			this.qipan.getComponent("XqtyQpNode").reGame(popItem.data);
-			this.PMenu.destroy();
+			this.PSelect.destroy();
 		}else{
 			var popItem = event.target.getComponent("PopSvItem");
 			this.clearGame();

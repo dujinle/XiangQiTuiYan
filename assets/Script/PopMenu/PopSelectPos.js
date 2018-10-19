@@ -18,29 +18,13 @@ cc.Class({
 			}
          }, this.node);
 		 this.node.on("ButtonApi", this.PressFunc, this);
+		 this.node.on('reParseFinish',this.EventFunc,this);
+	},
+	EventFunc(event){
+		cc.log("press node:" + this.node.name);
+		this.node.dispatchEvent(new cc.Event.EventCustom("itemPress", true));
 	},
 	PressFunc(event){
-		this.data = {
-			"board": [
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0, 18,  0, 16,  0, 18,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0, 12, 17,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0, 20,  0,  0, 17,  0,  0, 20,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0, 12,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0, 14,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 13,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0, 22,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  8,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-			],
-			"start":0
-		};
 		var index = event.target.getComponent("ButtonApi").index;
 		var ey = Math.floor(index / 3);
 		var ex = index - ey * 3;
@@ -69,7 +53,11 @@ cc.Class({
 				}
 			}
 		}
+		this.data.board = map;
 		cc.log(xx,yy,jx,jy,JSON.stringify(map));
+		this.node.emit('reParseFinish', {
+			msg: 'Hello, this is Cocos Creator',
+		});
 	}
     // update (dt) {},
 });

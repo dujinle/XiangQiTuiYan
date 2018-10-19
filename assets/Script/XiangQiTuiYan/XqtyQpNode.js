@@ -102,7 +102,7 @@ cc.Class({
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var itemPos = gCommon.BoardPos(x - gCommon.FILE_LEFT,y - gCommon.RANK_TOP);
 				var dist = Math.sqrt((pos.x - itemPos[0])*(pos.x - itemPos[0]) + (pos.y - itemPos[1])*(pos.y - itemPos[1]));
-				if(dist <= near_dist){
+				if(dist <= near_dist && dist < 100){
 					near_dist = dist;
 					near_pos = gCommon.COORD_XY(x,y);
 				}
@@ -171,6 +171,11 @@ cc.Class({
 	baiQz(sq){
 		cc.log("baiQz:" + gBoardGame.BoardMap[sq]);
 		if(gBoardGame.BoardMap[sq] == 0){
+			var sqSrc = this.getPosFromXY(gBoardGame.sqSelected.getPosition());
+			if(sqSrc != -1){
+				gBoardGame.DelQz(sqSrc,gBoardGame.BoardMap[sqSrc]);
+				gBoardGame.BoardNodes[sqSrc] = 0;
+			}
 			gBoardGame.AddQz(sq,parseInt(gBoardGame.sqSelected.name));
 			gBoardGame.BoardNodes[sq] = gBoardGame.sqSelected;
 			var pos = gCommon.NodePos(sq);

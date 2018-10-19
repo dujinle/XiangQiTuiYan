@@ -35,13 +35,13 @@ cc.Class({
 		cc.log("webview onload");
 		gImage = this.img;
 		this.node.on('loadFinish',this.EventFunc,this);
-		this.testQZ(result);
+		//this.parseResult(result);
 	},
 	EventFunc(event){
 		cc.log("press node:" + this.node.name);
 		this.node.dispatchEvent(new cc.Event.EventCustom("itemPress", true));
 	},
-	testQZ(result){
+	parseResult(result){
 		var map = new Array(256);
 		var width = 0;
 		var height = 0;
@@ -104,6 +104,7 @@ cc.Class({
 			msg: 'Hello, this is Cocos Creator',
 		});
 	},
+	//打开文本选择器
 	onUpload: function (activate) {
 		var fileInput = document.getElementById("fileInput");
 		if (fileInput == null) {
@@ -139,9 +140,13 @@ cc.Class({
 		this.PWaitAnim.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
 		this.PWaitAnim.getComponent("PopWait").play("等待图片识别中......");
 		readImg64(function(res){
-			self.PWaitAnim.destroy();
-			
 			cc.log(res);
+			if(res.code == 200){
+				self.PWaitAnim.destroy();
+				self.parseResult(res);
+			}else{
+				self.PWaitAnim.getComponent("PopWait").setStatus(res.message);
+			}
 		});
 	}
 });

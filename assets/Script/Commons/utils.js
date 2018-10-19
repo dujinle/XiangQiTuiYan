@@ -56,9 +56,13 @@ util.httpPOST = function(url,str,cb){
     xhr.open("POST", url);
     xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
     xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {            
-            var result = JSON.parse(xhr.responseText);
-            cb(result);
+        if (xhr.readyState == 4){
+			if(xhr.status >= 200 && xhr.status <= 207){            
+				var result = JSON.parse(xhr.responseText);
+				cb(result);
+			}else{
+				cb({"code":xhr.status,"message":"服务器出错！"});
+			}
 		}
     };
     xhr.send(sendstr);

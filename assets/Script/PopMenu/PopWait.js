@@ -30,5 +30,11 @@ cc.Class({
 		aclip.name='anim'
 		this.anim.addClip(aclip);
         this.anim.play('anim');
+	},
+	onExit(){
+		this.node.destroy();
+	},
+	setStatus(msg){
+		this.wait_label.getComponent(cc.Label).string = msg;
 	}
 });
