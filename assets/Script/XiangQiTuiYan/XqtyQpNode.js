@@ -12,16 +12,47 @@ cc.Class({
 			type:cc.Node,
 			default:[]
 		},
-		nodeList:null,
     },
 
     // use this for initialization
     onLoad: function () {
-		this.nodeList = new Array();
+		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
 		gCommon.selectedMark = this.selectedMark;
-		this.onTouchAction();
+		cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
+            onTouchBegan: function (touch, event) {
+				var target = event.getCurrentTarget();
+				var touchLocal = target.convertToNodeSpaceAR(touch.getLocation());
+				var beginPos = gCommon.BoardPos(0,9);
+				var endPos = gCommon.BoardPos(8,0);
+				//左右上下增加100像素
+				var width = Math.abs(beginPos[0] - endPos[0]) + 100;
+				var height = Math.abs(beginPos[1] - endPos[1]) + 100;
+				var rect = cc.rect(beginPos[0] - 50,beginPos[1] - 50,width,height);
+				if(rect.contains(touchLocal)){
+					cc.log("<qipan_node> touch begin org_local: x:" + touchLocal.x + " y:" + touchLocal.y);
+					self.touchOk = true;
+					return true;
+				}
+				self.touchOk = false;
+                return false;
+            },
+            onTouchMoved: function (touch, event) {            // 触摸移动时触发
+            },
+            onTouchEnded: function (touch, event) {            // 点击事件结束处理
+				var target = event.getCurrentTarget();
+				var touckLocal = target.convertToNodeSpaceAR(touch.getLocation());
+				if(self.touchOk == true){
+					self.clickSquare(touckLocal);
+					self.touchOk = false;
+				}
+			}
+         }, this.node);
     },
+	/*
 	onTouchAction(){
 		this.node.on(cc.Node.EventType.TOUCH_START,this.funcTouchStart,this);
 		this.node.on(cc.Node.EventType.TOUCH_END, this.funcTouchEnd,this);
@@ -47,6 +78,7 @@ cc.Class({
 		this.touchOk = false;
 		return false;
 	},
+	*/
 	funcTouchEnd(event){
 		var target = event.getCurrentTarget();
 		var touckLocal = target.convertToNodeSpaceAR(event.getLocation());
@@ -59,10 +91,9 @@ cc.Class({
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var sq = gCommon.COORD_XY(x, y);
-				var board = boardData.board;
-				if(board[sq] != 0 && board[sq] != null){
-					if(gCommon.nodeDic[board[sq]].length > 0){
-						gBoardGame.sqSelected = gCommon.nodeDic[board[sq]].shift();
+				if(boardData.board[sq] != 0 && boardData.board[sq] != null){
+					if(gCommon.nodeDic[boardData.board[sq]].length > 0){
+						gBoardGame.sqSelected = gCommon.nodeDic[boardData.board[sq]].shift();
 						this.baiQz(sq);
 					}
 				}
@@ -76,6 +107,9 @@ cc.Class({
 		var sq = this.getPosFromXY(touckLocal);
 		cc.log("clickSquare: sq:" + sq);
 		/*游戏开始 并且已经点击过棋子*/
+		if(gBoardGame.sqSelected == 0){
+			this.selectedMark.runAction(cc.hide());
+		}
 		if(gBoardGame.isGameOver > 0 && gBoardGame.sqSelected != 0){
 			this.gameMove(sq);
 		}
@@ -140,7 +174,8 @@ cc.Class({
 		}
 		if(dstNode != 0){
 			cc.log("moveNode	dstNode:" + dstNode.name);
-			dstNode.destroy();
+			var pos = this.QiNodes[dstNode.name - 8].getPosition();
+			dstNode.setPosition(pos);
 		}
 		//更新nodes表
 		gBoardGame.BoardNodes[sqDST] = srcNode;
@@ -169,10 +204,11 @@ cc.Class({
     },
 	//游戏开始之前摆棋子到棋盘的位置
 	baiQz(sq){
-		cc.log("baiQz:" + gBoardGame.BoardMap[sq]);
+		cc.log("baiQz:" + gBoardGame.BoardMap[sq],sq,gBoardGame.sqSelected.name);
 		if(gBoardGame.BoardMap[sq] == 0){
 			var sqSrc = this.getPosFromXY(gBoardGame.sqSelected.getPosition());
 			if(sqSrc != -1){
+				cc.log(sqSrc);
 				gBoardGame.DelQz(sqSrc,gBoardGame.BoardMap[sqSrc]);
 				gBoardGame.BoardNodes[sqSrc] = 0;
 			}

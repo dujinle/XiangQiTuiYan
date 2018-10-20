@@ -12,8 +12,8 @@ cc.Class({
 		spacing: 0, // 项之间的间隔大小
     },
     onLoad () {
-		this.totalCount = 20;
-		this.spawnCount = 14;
+		this.totalCount = gGames.length;
+		this.spawnCount = this.totalCount >= 14 ? 14:this.totalCount;
 		this.spacing = 10;
 		this.initialize();
 		cc.log("ScrollView:" + this.totalCount);
@@ -36,7 +36,7 @@ cc.Class({
             this.content.addChild(item);
             // 设置该item的坐标（注意父节点content的Anchor坐标是(0.5, 1)，所以item的y坐标总是负值）
     		item.setPosition(0, -item.height * (0.5 + i) - this.spacing * (i + 1));
-			item.getComponent("PopSvItem").setItem(i,gGames[0]);
+			item.getComponent("PopSvItem").setItem(i,gGames[i]);
             this.items.push(item);
     	}
     },

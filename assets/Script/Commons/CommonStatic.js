@@ -1,7 +1,8 @@
 /*公共数据接口*/
 cc.log("load gCommon......");
 gCommon = {};
-
+//主界面加载
+gCommon.LOAD_FINISH = false;
 // 棋子编号
 gCommon.PIECE_KING = 0;
 gCommon.PIECE_ADVISOR = 1;

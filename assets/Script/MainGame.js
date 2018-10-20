@@ -4,16 +4,26 @@ cc.Class({
     properties: {
 		rate:0,
 		source_leng:0,
+		loadProcess:cc.Node,
     },
     onLoad () {
-		this.source_leng = 18;
-		this.load_res();
-        this.schedule(this.load_update,0.5);
+		this.source_leng = 19;
+		if(gCommon.LOAD_FINISH == false){
+			this.loadProcess.getComponent("PopLoadProcess").play("数据加载中(0%)");
+			this.load_res();
+			this.schedule(this.load_update,0.5);
+		}else{
+			this.loadProcess.active = false;
+		}
     },
 	load_update(){
 		cc.log("this.rate:" + this.rate);
+		var scale = Math.floor((this.rate/this.source_leng ) * 100);
+		this.loadProcess.getComponent("PopLoadProcess").setStatus("数据加载中(" + scale + "%)");
 		if(this.rate >= this.source_leng){
+			gCommon.LOAD_FINISH = true;
 			this.unschedule(this.load_update);
+			this.loadProcess.active = false;
 		}
 	},
 	load_res(){
@@ -34,7 +44,11 @@ cc.Class({
 		});
 	},
 	button_tuiyan_cb(){
-		cc.director.loadScene("TuiYanGameScene");
+		this.loadProcess.active = true;
+		this.loadProcess.getComponent("PopLoadProcess").setStatus("场景加载中");
+		cc.director.preloadScene("TuiYanGameScene", function(){//预加载
+			cc.director.loadScene("TuiYanGameScene");
+		});
 	},
 	button_canju_cb(){
 		cc.director.loadScene("CanJuGameScene");
