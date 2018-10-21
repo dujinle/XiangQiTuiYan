@@ -50,6 +50,24 @@ util.httpGET = function(url,param,cb){
     xhr.send(null);
 }
 
+util.httpGETIMG = function(url,param,cb){
+	var xhr = cc.loader.getXMLHttpRequest();
+    if(param == null){
+    	xhr.open("GET", url,false);
+    }else{
+    	xhr.open("GET", url + "?" + param,false);
+    }
+    xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && (xhr.status >= 200 && xhr.status <= 207)) {
+            cb({"code":xhr.status,"data":xhr.responseText});
+        }else{
+			cb({"code":xhr.status,"message":xhr.message});
+		}
+    };
+    xhr.send(null);
+}
+
 util.httpPOST = function(url,str,cb){
     var sendstr = JSON.stringify(str);
     var xhr = cc.loader.getXMLHttpRequest();

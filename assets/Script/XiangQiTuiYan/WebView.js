@@ -18,7 +18,7 @@ function readImg64(cb){
 			util.httpPOST("http://192.168.1.107:8080/game_predict",{"data":this.result},cb);
 		}
 	}else{
-		cb({"code":-1,"message":"没有找到文件"});
+		util.httpPOST("http://192.168.1.107:8080/game_defpredict",{},cb);
 	}
 }
 
@@ -35,7 +35,6 @@ cc.Class({
 		cc.log("webview onload");
 		gImage = this.img;
 		this.node.on('loadFinish',this.EventFunc,this);
-		//this.parseResult(result);
 	},
 	EventFunc(event){
 		cc.log("press node:" + this.node.name);
