@@ -130,7 +130,10 @@ function gGameBoard(){
 	this.nDistance = 0;					// 距离根节点的步数
 	this.nMoveNum = 0;					//棋子走的步数
 	this.mvLast = 0;					//上一步棋
-
+	this.nodeDic = {
+		8:[], 9:[],10:[],11:[],12:[],13:[],14:[],
+		16:[],17:[],18:[],19:[],20:[],21:[],22:[]
+	};					//保存棋子节点信息
 
 	// 红、黑双方的子力价值
 	this.vlWhite = 0;

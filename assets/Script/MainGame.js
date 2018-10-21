@@ -51,7 +51,10 @@ cc.Class({
 		});
 	},
 	button_canju_cb(){
-		cc.director.loadScene("CanJuGameScene");
+		this.loadProcess.active = true;
+		this.loadProcess.getComponent("PopLoadProcess").setStatus("场景加载中");
+		cc.director.preloadScene("CanJuGameScene", function(){//预加载
+			cc.director.loadScene("CanJuGameScene");
+		});
 	}
-    // update (dt) {},
 });

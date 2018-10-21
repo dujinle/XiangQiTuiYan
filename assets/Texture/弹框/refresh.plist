@@ -4,183 +4,183 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>wait_01.gif</key>
+            <key>图层 10.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>textureRect</key>
-                <string>{{0,0},{41,41}}</string>
+                <string>{{0,176},{88,89}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_02.gif</key>
+            <key>图层 11.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>textureRect</key>
-                <string>{{41,0},{41,41}}</string>
+                <string>{{265,87},{88,89}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_03.png</key>
+            <key>图层 12.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{83,89}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{83,89}</string>
                 <key>textureRect</key>
-                <string>{{82,0},{41,41}}</string>
+                <string>{{88,176},{83,89}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_04.gif</key>
+            <key>图层 13.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{88,89}</string>
                 <key>textureRect</key>
-                <string>{{123,0},{41,41}}</string>
+                <string>{{260,176},{88,89}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_05.gif</key>
+            <key>图层 14.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{89,89}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{89,89}</string>
                 <key>textureRect</key>
-                <string>{{164,0},{41,41}}</string>
+                <string>{{171,176},{89,89}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_07.gif</key>
+            <key>图层 15.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{89,82}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{89,82}</string>
                 <key>textureRect</key>
-                <string>{{246,0},{41,41}}</string>
+                <string>{{0,0},{89,82}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_08.gif</key>
+            <key>图层 16.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{89,88}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{89,88}</string>
                 <key>textureRect</key>
-                <string>{{287,0},{41,41}}</string>
+                <string>{{176,87},{89,88}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_09.gif</key>
+            <key>图层 5.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{87,87}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{87,87}</string>
                 <key>textureRect</key>
-                <string>{{328,0},{41,41}}</string>
+                <string>{{178,0},{87,87}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_10.gif</key>
+            <key>图层 6.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{81,87}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{81,87}</string>
                 <key>textureRect</key>
-                <string>{{369,0},{41,41}}</string>
+                <string>{{265,0},{81,87}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_11.gif</key>
+            <key>图层 7.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{87,88}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{87,88}</string>
                 <key>textureRect</key>
-                <string>{{410,0},{41,41}}</string>
+                <string>{{0,87},{87,88}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_12.gif</key>
+            <key>图层 8.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{89,88}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{89,88}</string>
                 <key>textureRect</key>
-                <string>{{451,0},{41,41}}</string>
+                <string>{{87,87},{89,88}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>wait_6.gif</key>
+            <key>图层 9.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{41,41}</string>
+                <string>{89,83}</string>
                 <key>spriteSourceSize</key>
-                <string>{41,41}</string>
+                <string>{89,83}</string>
                 <key>textureRect</key>
-                <string>{{205,0},{41,41}}</string>
+                <string>{{89,0},{89,83}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -194,13 +194,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>test.png</string>
+            <string>refresh.png</string>
             <key>size</key>
-            <string>{492,41}</string>
+            <string>{353,265}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:37cd381ce3082886ad37ae84c98506de:f4d0a36394164e5760e77dd17c557fbe:96fb3d46aab20ec9eb9704de1ab972b6$</string>
+            <string>$TexturePacker:SmartUpdate:5a57455005c5118e6ae3813e4c7b175d:131229b4b2d81cface271f46fbd3ec1e:c823965bf41e729697a5d8c56078a7f3$</string>
             <key>textureFileName</key>
-            <string>test.png</string>
+            <string>refresh.png</string>
         </dict>
     </dict>
 </plist>

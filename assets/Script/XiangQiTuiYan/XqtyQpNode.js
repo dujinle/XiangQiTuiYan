@@ -19,11 +19,12 @@ cc.Class({
 		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
 		gCommon.selectedMark = this.selectedMark;
-		cc.eventManager.addListener({
+		this.touchListener = cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
             onTouchBegan: function (touch, event) {
+				cc.log("<qipan_node> touch begin org_local");
 				var target = event.getCurrentTarget();
 				var touchLocal = target.convertToNodeSpaceAR(touch.getLocation());
 				var beginPos = gCommon.BoardPos(0,9);
@@ -78,7 +79,7 @@ cc.Class({
 		this.touchOk = false;
 		return false;
 	},
-	*/
+	
 	funcTouchEnd(event){
 		var target = event.getCurrentTarget();
 		var touckLocal = target.convertToNodeSpaceAR(event.getLocation());
@@ -87,13 +88,14 @@ cc.Class({
 			this.touchOk = false;
 		}
 	},
+	*/
 	reGame(boardData){
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
 				var sq = gCommon.COORD_XY(x, y);
 				if(boardData.board[sq] != 0 && boardData.board[sq] != null){
-					if(gCommon.nodeDic[boardData.board[sq]].length > 0){
-						gBoardGame.sqSelected = gCommon.nodeDic[boardData.board[sq]].shift();
+					if(gBoardGame.nodeDic[boardData.board[sq]].length > 0){
+						gBoardGame.sqSelected = gBoardGame.nodeDic[boardData.board[sq]].pop();
 						this.baiQz(sq);
 					}
 				}
@@ -114,6 +116,16 @@ cc.Class({
 			this.gameMove(sq);
 		}
 		if(gBoardGame.isGameOver == 0 && gBoardGame.sqSelected != 0){
+			//检索是否是棋盘内的棋子
+			var isSame = -1;
+			for(var i = 0;i < gBoardGame.nodeDic[gBoardGame.sqSelected.name].length;i++){
+				if(gBoardGame.nodeDic[gBoardGame.sqSelected.name][i] == gBoardGame.sqSelected){
+					isSame = i;
+				}
+			}
+			if(isSame != -1){
+				gBoardGame.nodeDic[gBoardGame.sqSelected.name].splice(isSame,1);
+			}
 			this.baiQz(sq);
 		}
 	},
@@ -176,6 +188,8 @@ cc.Class({
 			cc.log("moveNode	dstNode:" + dstNode.name);
 			var pos = this.QiNodes[dstNode.name - 8].getPosition();
 			dstNode.setPosition(pos);
+			dstNode.getComponent("QzNode").SetPressEvent(false);
+			gBoardGame.nodeDic[dstNode.name].push(dstNode);
 		}
 		//更新nodes表
 		gBoardGame.BoardNodes[sqDST] = srcNode;
