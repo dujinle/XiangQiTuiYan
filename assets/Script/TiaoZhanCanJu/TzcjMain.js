@@ -13,18 +13,38 @@ cc.Class({
 		gameNum:cc.Node,
     },
 	onLoad(){
-		this.setGameButtonsActive(false);
 		gBoardGame = new gGameBoard();
-	},
-    start () {
-		this.onLoadCanJu(gGames["马跃檀溪"]);
+		this.setGameButtonsActive(false);
+		this.node.on("itemPress", this.itemPressFunc, this);
 	},
 	setGameButtonsActive(flag){
 		this.backButton.getComponent(cc.Button).interactable = flag;
 		this.restartButton.getComponent(cc.Button).interactable = flag;
 	},
 	onLoadCanJu(data){
-		cc.log("start load can ju game");
+		//棋盘上添加棋子
+		this.boardData = util.deepClone(data);
+		gBoardGame.sdPlayer = data.start
+		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
+			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
+				var sq = gCommon.COORD_XY(x, y);
+				var pc = data.board[sq];
+				if (pc != 0) {
+					var pos = gCommon.BoardPos(x - gCommon.FILE_LEFT,y - gCommon.RANK_TOP);
+					var qiNode = this.newNode(sq,pc);
+					this.qipan.addChild(qiNode);
+					qiNode.setPosition(cc.v2(pos[0],pos[1]));
+					gBoardGame.AddQz(sq,pc);
+					gBoardGame.BoardNodes[sq] = qiNode;
+				}
+			}
+		}
+	},
+	clearGame(){
+		cc.log("start clear game");
+		this.startButton.getChildByName("start").active = true;
+		this.startButton.getChildByName("stop").active = false;
+		this.setGameButtonsActive(false);
 		/*清空棋盘*/
 		for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
 			for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
@@ -40,24 +60,6 @@ cc.Class({
 			gCommon.selectedMark.runAction(cc.hide());
 		}
 		gBoardGame.ClearBoard();
-		this.boardData = data;
-		if(data != null){
-			//棋盘上添加棋子
-			for (var x = gCommon.FILE_LEFT; x <= gCommon.FILE_RIGHT; x ++) {
-				for (var y = gCommon.RANK_TOP; y <= gCommon.RANK_BOTTOM; y ++) {
-					var sq = gCommon.COORD_XY(x, y);
-					var pc = data.board[sq];
-					if (pc != 0) {
-						var pos = gCommon.BoardPos(x - gCommon.FILE_LEFT,y - gCommon.RANK_TOP);
-						var qiNode = this.newNode(sq,pc);
-						this.qipan.addChild(qiNode);
-						qiNode.setPosition(cc.v2(pos[0],pos[1]));
-						gBoardGame.AddQz(sq,pc);
-						gBoardGame.BoardNodes[sq] = qiNode;
-					}
-				}
-			}
-		}
 	},
 	newNode(sq,key){
 		var QzNode = new cc.Node(sq);
@@ -68,9 +70,7 @@ cc.Class({
 	},
 	//重新开始游戏
 	gameRestart(){
-		this.setGameButtonsActive(false);
-		this.startButton.getChildByName("start").active = true;
-		this.startButton.getChildByName("stop").active = false;
+		this.clearGame();
 		this.onLoadCanJu(this.boardData);
 	},
 	//悔棋
@@ -124,9 +124,35 @@ cc.Class({
 	},
 	onExit(){
 		gBoardGame.ClearBoard();
+		cc.eventManager.removeListener(this.qipan.getComponent("TzcjQpNode").touchListener);
 		cc.director.loadScene("MainGameScene");
-		this.node.destroy();
-		gBoardGame = null;
+	},
+	PopToolMenu(){
+		this.PMenu = cc.instantiate(g_assets["PopToolMenu"]);
+		this.node.addChild(this.PMenu);
+		this.PMenu.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+	},
+	itemPressFunc(event){
+		cc.log("itemPressFunc");
+		if(event.target.name == "tupian_content"){
+			var popItem = event.target.getComponent("WebView");
+			//加载棋子位置修正界面
+			this.PSelect = cc.instantiate(g_assets["PopSelectPos"]);
+			this.node.addChild(this.PSelect);
+			this.PSelect.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+			this.PSelect.getComponent("PopSelectPos").data = popItem.data;
+			this.PMenu.destroy();
+		}else if(event.target.name == "PopSelectPos"){
+			var popItem = event.target.getComponent("PopSelectPos");
+			this.clearGame();
+			this.onLoadCanJu(popItem.data);
+			this.PSelect.destroy();
+		}else{
+			var popItem = event.target.getComponent("PopSvItem");
+			this.clearGame();
+			this.onLoadCanJu(popItem.data);
+			this.PMenu.destroy();
+		}
 	},
 	update(dt){
 		this.gameNum.getComponent(cc.Label).string = gBoardGame.nMoveNum - 1;

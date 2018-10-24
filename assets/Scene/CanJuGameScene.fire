@@ -3328,8 +3328,8 @@
     "target": {
       "__id__": 2
     },
-    "component": "main",
-    "handler": "load_qipan",
+    "component": "TzcjMain",
+    "handler": "PopToolMenu",
     "customEventData": ""
   },
   {

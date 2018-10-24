@@ -17,39 +17,48 @@ cc.Class({
 		this.selectedMark.runAction(cc.hide());
 		gCommon.selectedMark = this.selectedMark;
 		
-		this.node.on(cc.Node.EventType.TOUCH_START,function (event) {
-			var target = event.getCurrentTarget();
-			var touchLocal = target.convertToNodeSpaceAR(event.getLocation());
-			var beginPos = gCommon.BoardPos(0,9);
-			var endPos = gCommon.BoardPos(8,0);
-			//左右上下增加100像素
-			var width = Math.abs(beginPos[0] - endPos[0]) + 100;
-			var height = Math.abs(beginPos[1] - endPos[1]) + 100;
-			var rect = cc.rect(beginPos[0] - 50,beginPos[1] - 50,width,height);
-			if(rect.contains(touchLocal)){
-				cc.log("<qipan_node> touch begin org_local: x:" + touchLocal.x + " y:" + touchLocal.y);
-				self.touchOk = true;
-				return true;
-			}
-			self.touchOk = false;
-			return false;
-		},this);
-		
-		this.node.on(cc.Node.EventType.TOUCH_END, function (event) {
-			var target = event.getCurrentTarget();
-			var touckLocal = target.convertToNodeSpaceAR(event.getLocation());
-			if(self.touchOk == true){
-				self.clickSquare(touckLocal);
+		this.touchListener = cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
+            onTouchBegan: function (touch, event) {
+				cc.log("<qipan_node> touch begin org_local");
+				var target = event.getCurrentTarget();
+				var touchLocal = target.convertToNodeSpaceAR(touch.getLocation());
+				var beginPos = gCommon.BoardPos(0,9);
+				var endPos = gCommon.BoardPos(8,0);
+				//左右上下增加100像素
+				var width = Math.abs(beginPos[0] - endPos[0]) + 100;
+				var height = Math.abs(beginPos[1] - endPos[1]) + 100;
+				var rect = cc.rect(beginPos[0] - 50,beginPos[1] - 50,width,height);
+				if(rect.contains(touchLocal)){
+					cc.log("<qipan_node> touch begin org_local: x:" + touchLocal.x + " y:" + touchLocal.y);
+					self.touchOk = true;
+					return true;
+				}
 				self.touchOk = false;
+                return false;
+            },
+            onTouchMoved: function (touch, event) {            // 触摸移动时触发
+            },
+            onTouchEnded: function (touch, event) {            // 点击事件结束处理
+				var target = event.getCurrentTarget();
+				var touckLocal = target.convertToNodeSpaceAR(touch.getLocation());
+				if(self.touchOk == true){
+					self.clickSquare(touckLocal);
+					self.touchOk = false;
+				}
 			}
-		},this);
+         }, this.node);
     },
 	//点击棋盘的位置检测是否可以走子
 	clickSquare(touckLocal){
-		var self = this;
 		var sq = this.getPosFromXY(touckLocal);
 		cc.log("clickSquare: sq:" + sq);
 		/*游戏开始 并且已经点击过棋子*/
+		if(gBoardGame.sqSelected == 0){
+			this.selectedMark.runAction(cc.hide());
+		}
 		if(gBoardGame.isGameOver > 0 && gBoardGame.sqSelected != 0){
 			this.gameMove(sq);
 		}
