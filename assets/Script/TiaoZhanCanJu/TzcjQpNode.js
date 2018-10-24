@@ -14,6 +14,7 @@ cc.Class({
     onLoad: function () {
 		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
+		this.selectedMark.runAction(cc.hide());
 		gCommon.selectedMark = this.selectedMark;
 		
 		this.node.on(cc.Node.EventType.TOUCH_START,function (event) {

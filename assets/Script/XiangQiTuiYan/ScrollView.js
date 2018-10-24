@@ -11,12 +11,9 @@ cc.Class({
 		totalCount: 0, // 在列表中显示的项数量
 		spacing: 0, // 项之间的间隔大小
     },
-    onLoad () {
-		this.totalCount = gGames.length;
-		this.spawnCount = this.totalCount >= 14 ? 14:this.totalCount;
+    onLoad () {	
 		this.spacing = 10;
-		this.initialize();
-		cc.log("ScrollView:" + this.totalCount);
+		this.getServerData();
 	},
 	// 列表初始化
     initialize: function () {
@@ -36,7 +33,7 @@ cc.Class({
             this.content.addChild(item);
             // 设置该item的坐标（注意父节点content的Anchor坐标是(0.5, 1)，所以item的y坐标总是负值）
     		item.setPosition(0, -item.height * (0.5 + i) - this.spacing * (i + 1));
-			item.getComponent("PopSvItem").setItem(i,gGames[i]);
+			item.getComponent("PopSvItem").setItem(i,this.data[i]);
             this.items.push(item);
     	}
     },
@@ -76,7 +73,7 @@ cc.Class({
                     items[i].y = newY;
 					let item = items[i].getComponent('PopSvItem');
                     let itemId = item.itemID - items.length; // update item id
-                    item.setItem(itemId,gGames[0]);
+                    item.setItem(itemId,this.data[itemId]);
 					cc.log("prev id:" + itemId);
                 }
             } else {
@@ -88,7 +85,7 @@ cc.Class({
                     items[i].y = newY;
                     let item = items[i].getComponent('PopSvItem');
                     let itemId = item.itemID + items.length;
-					item.setItem(itemId,gGames[0]);
+					item.setItem(itemId,this.data[itemId]);
 					cc.log("next id:" + itemId);
                 }
             }
@@ -97,19 +94,37 @@ cc.Class({
         // 更新lastContentPosY和总项数显示
         this.lastContentPosY = this.scrollView.content.y;
     },
-
-	init_record_info(data,pthis){
+	//刷新数据获取最新的数据
+	refreshServerData(){
 		var self = this;
-		this.pthis = pthis;
-		var param = {
-			"player_id":data["id"],
-			"index":0,
-			"length":this.totalCount
-		};
-		Servers.gameInfoProcess("getBuyFangkaList",param,function(data){
-			self.data_list = data.msg;
-			self.totalCount = self.data_list.length;
-			if(self.data_list.length > 0){
+		this.PWaitAnim = cc.instantiate(g_assets["PopWait"]);
+		this.node.addChild(this.PWaitAnim);
+		this.PWaitAnim.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+		this.PWaitAnim.getComponent("PopWait").play("数据加载中......");
+		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50},function(res){
+			if(res.code != 200){
+				self.PWaitAnim.getComponent("PopWait").setStatus(res.message);
+			}else{
+				self.PWaitAnim.destroy();
+				self.data.concat(res.result);
+			}
+		});
+	},
+	//获取服务器上的残局数据
+	getServerData(){
+		var self = this;
+		this.PWaitAnim = cc.instantiate(g_assets["PopWait"]);
+		this.node.addChild(this.PWaitAnim);
+		this.PWaitAnim.setPosition(cc.v2(0,0));
+		this.PWaitAnim.getComponent("PopWait").play("数据加载中......");
+		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50},function(res){
+			if(res.code != 200){
+				self.PWaitAnim.getComponent("PopWait").setStatus(res.message);
+			}else{
+				self.PWaitAnim.destroy();
+				self.data = res.result;
+				self.totalCount = res.result.length;
+				self.spawnCount = self.totalCount >= 14 ? 14:self.totalCount;
 				self.initialize();
 			}
 		});
