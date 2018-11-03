@@ -56,5 +56,12 @@ cc.Class({
 		cc.director.preloadScene("CanJuGameScene", function(){//预加载
 			cc.director.loadScene("CanJuGameScene");
 		});
+	},
+	button_renji_cb(){
+		this.loadProcess.active = true;
+		this.loadProcess.getComponent("PopLoadProcess").setStatus("场景加载中");
+		cc.director.preloadScene("RenJiGameScene", function(){//预加载
+			cc.director.loadScene("RenJiGameScene");
+		});
 	}
 });

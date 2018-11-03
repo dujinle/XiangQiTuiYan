@@ -142,6 +142,7 @@ function gGameBoard(){
 	for(var i = 0;i < gCommon.MAX_MOVES;i++){
 		this.mvsList.push(new MoveStruct());
 	}
+	Zobrist.InitZobrist();
 }
 
 gGameBoard.prototype = {
