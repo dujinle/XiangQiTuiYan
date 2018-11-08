@@ -4,6 +4,7 @@ cc.Class({
     properties: {
 		selectedMark:cc.Node,
 		touchOk:false,
+		gameStatus:-1,
 		audioSources:{
 			type:cc.AudioSource,
 			default:[]
@@ -14,6 +15,8 @@ cc.Class({
     onLoad: function () {
 		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
+		this.node.on('gameStatus',this.EventFunc,this);
+	
 		this.selectedMark.runAction(cc.hide());
 		gCommon.selectedMark = this.selectedMark;
 		
@@ -122,9 +125,17 @@ cc.Class({
 			}
 		}
 	},
+	EventFunc(event){
+		cc.log("press node:" + this.node.name);
+		this.node.dispatchEvent(new cc.Event.EventCustom("gameStatus", true));
+	},
 	playResWav(whichWav){
 		cc.log("playResWav:" + whichWav);
+		this.gameStatus = whichWav;
 		this.audioSources[whichWav].getComponent(cc.AudioSource).play();
+		this.node.emit('gameStatus', {
+			msg: 'Hello, this is Cocos Creator',
+		});
 	},
 	drawSelected(sq){
 		var pos = gCommon.NodePos(sq);

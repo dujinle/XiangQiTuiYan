@@ -1,10 +1,9 @@
 {
-  "ver": "2.2.0",
+  "ver": "1.0.0",
   "uuid": "57da4a03-9bf3-467d-9aaf-ac1e9a10d226",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
-  "premultiplyAlpha": false,
   "subMetas": {
     "工具按钮弹出框": {
       "ver": "1.0.3",

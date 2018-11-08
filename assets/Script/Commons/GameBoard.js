@@ -593,7 +593,7 @@ gGameBoard.prototype = {
 
 		// 1. 检查重复局面
 		var mvs = [];
-		var vl = this.RepStatus();
+		var vl = this.RepStatus(1);
 		if (vl != 0) {
 			return this.RepValue(vl);
 		}
@@ -661,7 +661,7 @@ gGameBoard.prototype = {
 			}
 
 			// 1-1. 检查重复局面(注意：不要在根节点检查，否则就没有走法了)
-			var vl = this.RepStatus();
+			var vl = this.RepStatus(1);
 			if (vl != 0) {
 				return this.RepValue(vl);
 			}
