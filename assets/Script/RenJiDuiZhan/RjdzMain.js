@@ -16,6 +16,7 @@ cc.Class({
 		gBoardGame = new gGameBoard();
 		this.setGameButtonsActive(false);
 		this.node.on("itemPress", this.itemPressFunc, this);
+		this.node.on("gameStatus", this.gameStatusFunc, this);
 		this.clearGame();
 		this.onLoadCanJu(gCommon.StartupMap);
 	},
@@ -133,6 +134,19 @@ cc.Class({
 		this.PMenu = cc.instantiate(g_assets["PopToolMenu"]);
 		this.node.addChild(this.PMenu);
 		this.PMenu.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
+	},
+	gameStatusFunc(event){
+		this.PGameStatus = cc.instantiate(g_assets["PopResult"]);
+		if(this.PGameStatus.getComponent("PopResult").gameStatus == 3){
+			this.PGameStatus.getComponent("PopResult").setStatus("你赢了！");
+		}else if(this.PGameStatus.getComponent("PopResult").gameStatus == 6){
+			this.PGameStatus.getComponent("PopResult").setStatus("你输了！");
+		}else if(this.PGameStatus.getComponent("PopResult").gameStatus == 7){
+			this.PGameStatus.getComponent("PopResult").setStatus("你们和了！");
+		}
+		
+		this.node.addChild(this.PGameStatus);
+		this.PGameStatus.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
 	},
 	itemPressFunc(event){
 		cc.log("itemPressFunc");

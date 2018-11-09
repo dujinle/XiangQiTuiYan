@@ -142,9 +142,6 @@ cc.Class({
 			this.PGameStatus.getComponent("PopResult").setStatus("你输了！");
 		}else if(this.PGameStatus.getComponent("PopResult").gameStatus == 7){
 			this.PGameStatus.getComponent("PopResult").setStatus("你们和了！");
-		}else{
-			this.PGameStatus.destroy();
-			return;
 		}
 		
 		this.node.addChild(this.PGameStatus);

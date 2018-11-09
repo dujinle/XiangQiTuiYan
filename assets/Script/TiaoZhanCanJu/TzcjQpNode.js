@@ -133,9 +133,11 @@ cc.Class({
 		cc.log("playResWav:" + whichWav);
 		this.gameStatus = whichWav;
 		this.audioSources[whichWav].getComponent(cc.AudioSource).play();
-		this.node.emit('gameStatus', {
-			msg: 'Hello, this is Cocos Creator',
-		});
+		if(this.gameStatus == 3 || this.gameStatus == 6 || this.gameStatus == 7){
+			this.node.emit('gameStatus', {
+				msg: 'Hello, this is Cocos Creator',
+			});
+		}
 	},
 	drawSelected(sq){
 		var pos = gCommon.NodePos(sq);

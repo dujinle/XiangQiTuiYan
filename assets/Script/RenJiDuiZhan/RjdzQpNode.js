@@ -4,6 +4,7 @@ cc.Class({
     properties: {
 		selectedMark:cc.Node,
 		touchOk:false,
+		gameStatus:-1,
 		audioSources:{
 			type:cc.AudioSource,
 			default:[]
@@ -14,6 +15,7 @@ cc.Class({
     onLoad: function () {
 		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
+		this.node.on('gameStatus',this.EventFunc,this);
 		this.selectedMark.runAction(cc.hide());
 		gCommon.selectedMark = this.selectedMark;
 		
@@ -90,7 +92,10 @@ cc.Class({
 		}
 		return near_pos;
 	},
-	
+	EventFunc(event){
+		cc.log("press node:" + this.node.name);
+		this.node.dispatchEvent(new cc.Event.EventCustom("gameStatus", true));
+	},
 	// 电脑回应一步棋
 	responseMove(){
 		// 电脑走一步棋
@@ -124,7 +129,13 @@ cc.Class({
 	},
 	playResWav(whichWav){
 		cc.log("playResWav:" + whichWav);
+		this.gameStatus = whichWav;
 		this.audioSources[whichWav].getComponent(cc.AudioSource).play();
+		if(this.gameStatus == 3 || this.gameStatus == 6 || this.gameStatus == 7){
+			this.node.emit('gameStatus', {
+				msg: 'Hello, this is Cocos Creator',
+			});
+		}
 	},
 	drawSelected(sq){
 		var pos = gCommon.NodePos(sq);
