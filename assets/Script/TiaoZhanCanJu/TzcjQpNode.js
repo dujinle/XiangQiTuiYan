@@ -3,6 +3,7 @@ cc.Class({
 
     properties: {
 		selectedMark:cc.Node,
+		historyMark:cc.Node,
 		touchOk:false,
 		gameStatus:-1,
 		audioSources:{
@@ -15,11 +16,12 @@ cc.Class({
     onLoad: function () {
 		var self = this;
 		this.node.on("pressed", this.PressFunc, this);
-		this.node.on('gameStatus',this.EventFunc,this);
+		this.node.on('TGameStatus',this.EventFunc,this);
 	
 		this.selectedMark.runAction(cc.hide());
+		this.historyMark.runAction(cc.hide());
 		gCommon.selectedMark = this.selectedMark;
-		
+		gCommon.historyMark = this.historyMark;
 		this.touchListener = cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
@@ -61,6 +63,7 @@ cc.Class({
 		/*游戏开始 并且已经点击过棋子*/
 		if(gBoardGame.sqSelected == 0){
 			this.selectedMark.runAction(cc.hide());
+			this.historyMark.runAction(cc.hide());
 		}
 		if(gBoardGame.isGameOver > 0 && gBoardGame.sqSelected != 0){
 			this.gameMove(sq);
@@ -127,14 +130,15 @@ cc.Class({
 	},
 	EventFunc(event){
 		cc.log("press node:" + this.node.name);
-		this.node.dispatchEvent(new cc.Event.EventCustom("gameStatus", true));
+		//事件传递到父节点
+		this.node.dispatchEvent(new cc.Event.EventCustom("PTGameStatus", true));
 	},
 	playResWav(whichWav){
 		cc.log("playResWav:" + whichWav);
 		this.gameStatus = whichWav;
 		this.audioSources[whichWav].getComponent(cc.AudioSource).play();
 		if(this.gameStatus == 3 || this.gameStatus == 6 || this.gameStatus == 7){
-			this.node.emit('gameStatus', {
+			this.node.emit('TGameStatus', {
 				msg: 'Hello, this is Cocos Creator',
 			});
 		}
@@ -143,6 +147,7 @@ cc.Class({
 		var pos = gCommon.NodePos(sq);
 		this.selectedMark.setPosition(cc.v2(pos[0],pos[1]));
 		this.selectedMark.runAction(cc.show());
+		this.historyMark.runAction(cc.hide());
 	},
 	moveNode(mv,sdPlayer){
 		var sqSRC = gCommon.SRC(mv);
@@ -151,17 +156,26 @@ cc.Class({
 		var dstNode = gBoardGame.BoardNodes[sqDST];
 		if(srcNode != 0){
 			cc.log("moveNode	srcNode:" + srcNode.name);
-			var pos = gCommon.NodePos(sqDST);
-			var move = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
+			var posDST = gCommon.NodePos(sqDST);
+			var posSRC = gCommon.NodePos(sqSRC);
+			var move = cc.moveTo(0.2,cc.v2(posDST[0],posDST[1]));
 			
 			srcNode.runAction(move);
 			//如果是电脑走子则隐藏选择框
 			if(sdPlayer != 0){
-				var moveMark = cc.moveTo(0.2,cc.v2(pos[0],pos[1]));
-				this.selectedMark.runAction(moveMark);
+				var selMoveMark = cc.moveTo(0.2,cc.v2(posDST[0],posDST[1]));
+				this.selectedMark.runAction(selMoveMark);
 			}else{
-				this.selectedMark.runAction(cc.hide());
+				this.selectedMark.runAction(cc.sequence(
+					cc.delayTime(0.2),
+					cc.callFunc(function(){
+							gCommon.selectedMark.setPosition(cc.v2(posDST[0],posDST[1]));
+						})
+					)
+				)
 			}
+			this.historyMark.setPosition(cc.v2(posSRC[0],posSRC[1]));
+			this.historyMark.runAction(cc.show());
 		}
 		if(dstNode != 0){
 			cc.log("moveNode	dstNode:" + dstNode.name);

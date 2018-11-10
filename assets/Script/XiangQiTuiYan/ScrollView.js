@@ -101,7 +101,7 @@ cc.Class({
 		this.node.addChild(this.PWaitAnim);
 		this.PWaitAnim.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
 		this.PWaitAnim.getComponent("PopWait").play("数据加载中......");
-		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50},function(res){
+		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50,"last_time":0},function(res){
 			if(res.code != 200){
 				self.PWaitAnim.getComponent("PopWait").setStatus(res.message);
 			}else{
@@ -117,7 +117,7 @@ cc.Class({
 		this.node.addChild(this.PWaitAnim);
 		this.PWaitAnim.setPosition(cc.v2(0,0));
 		this.PWaitAnim.getComponent("PopWait").play("数据加载中......");
-		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50},function(res){
+		util.httpPOST("https://www.enjoymygame.com/object_detection_xq/get_xqqp",{"num":50,"last_time":0},function(res){
 			if(res.code != 200){
 				self.PWaitAnim.getComponent("PopWait").setStatus(res.message);
 			}else{

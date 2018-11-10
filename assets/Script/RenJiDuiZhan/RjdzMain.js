@@ -16,7 +16,7 @@ cc.Class({
 		gBoardGame = new gGameBoard();
 		this.setGameButtonsActive(false);
 		this.node.on("itemPress", this.itemPressFunc, this);
-		this.node.on("gameStatus", this.gameStatusFunc, this);
+		this.node.on("PRGameStatus", this.gameStatusFunc, this);
 		this.clearGame();
 		this.onLoadCanJu(gCommon.StartupMap);
 	},
@@ -60,6 +60,9 @@ cc.Class({
 		//清空选择框
 		if(gCommon.selectedMark != null){
 			gCommon.selectedMark.runAction(cc.hide());
+		}
+		if(gCommon.historyMark != null){
+			gCommon.historyMark.runAction(cc.hide());
 		}
 		gBoardGame.ClearBoard();
 	},
@@ -137,14 +140,13 @@ cc.Class({
 	},
 	gameStatusFunc(event){
 		this.PGameStatus = cc.instantiate(g_assets["PopResult"]);
-		if(this.PGameStatus.getComponent("PopResult").gameStatus == 3){
+		if(this.qipan.getComponent("RjdzQpNode").gameStatus == 3){
 			this.PGameStatus.getComponent("PopResult").setStatus("你赢了！");
-		}else if(this.PGameStatus.getComponent("PopResult").gameStatus == 6){
+		}else if(this.qipan.getComponent("RjdzQpNode").gameStatus == 6){
 			this.PGameStatus.getComponent("PopResult").setStatus("你输了！");
-		}else if(this.PGameStatus.getComponent("PopResult").gameStatus == 7){
+		}else if(this.qipan.getComponent("RjdzQpNode").gameStatus == 7){
 			this.PGameStatus.getComponent("PopResult").setStatus("你们和了！");
 		}
-		
 		this.node.addChild(this.PGameStatus);
 		this.PGameStatus.setPosition(this.node.convertToNodeSpaceAR(cc.v2(cc.winSize.width/2,cc.winSize.height/2)));
 	},

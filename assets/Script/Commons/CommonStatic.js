@@ -53,6 +53,7 @@ gCommon.PHASE_GEN_MOVES = 3;
 gCommon.PHASE_REST = 4;
 
 gCommon.selectedMark = null;
+gCommon.historyMark = null;
 //象棋棋子资源名称R:红色 B:黑色
 gCommon.PngResource = {
 	8:"RJ",
